@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zumaya Rentals — Events, Restroom Trailers & Production Rentals | Whittier, CA</title>
+<meta name="description" content="Zumaya Rentals is your one vendor for the whole event in Southern California — tables, tents, luxury restroom trailers, film production gear, and dumpsters. Serving Whittier and all of SoCal.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#131A2C;
+    --ink-2:#1C2540;
+    --ink-3:#28324f;
+    --amber:#F2A93B;
+    --amber-deep:#E08A1E;
+    --teal:#1E6E6A;
+    --cream:#F7F3EB;
+    --paper:#FFFFFF;
+    --line:rgba(255,255,255,.12);
+    --line-dark:rgba(19,26,44,.12);
+    --txt-light:#EDE9DF;
+    --txt-mute:#A9B0C4;
+    --txt-dark:#1B2235;
+    --txt-dark-mute:#5A6275;
+    --radius:14px;
+    --maxw:1180px;
+    --shadow:0 18px 50px rgba(11,16,30,.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    color:var(--txt-dark);
+    background:var(--cream);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.04;letter-spacing:-.01em}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .eyebrow{font-family:'Inter';font-weight:600;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase}
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    display:inline-flex;align-items:center;gap:.5rem;
+    font-weight:600;font-size:.95rem;
+    padding:.85rem 1.4rem;border-radius:999px;border:1.5px solid transparent;
+    cursor:pointer;transition:transform .15s ease,background .2s ease,box-shadow .2s ease;
+    white-space:nowrap;
+  }
+  .btn-amber{background:var(--amber);color:#21160a;box-shadow:0 8px 22px rgba(242,169,59,.35)}
+  .btn-amber:hover{transform:translateY(-2px);background:#ffb84a}
+  .btn-ghost{background:transparent;color:var(--txt-light);border-color:var(--line)}
+  .btn-ghost:hover{border-color:var(--amber);color:#fff}
+  .btn-dark{background:var(--ink);color:#fff}
+  .btn-dark:hover{transform:translateY(-2px);background:var(--ink-2)}
+  .btn-sm{padding:.55rem 1rem;font-size:.85rem}
+
+  /* ---------- Header ---------- */
+  header.site{
+    position:sticky;top:0;z-index:60;
+    background:rgba(19,26,44,.92);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:72px}
+  .brand{display:flex;align-items:center;gap:.6rem;color:#fff}
+  .brand .mark{
+    width:38px;height:38px;border-radius:10px;
+    background:linear-gradient(135deg,var(--amber),var(--amber-deep));
+    display:grid;place-items:center;color:#21160a;font-family:'Bricolage Grotesque';font-weight:800;font-size:1.2rem;
+    box-shadow:0 6px 16px rgba(242,169,59,.4);
+  }
+  .brand .name{font-family:'Bricolage Grotesque';font-weight:700;font-size:1.18rem;color:#fff;letter-spacing:-.02em}
+  .brand .name span{color:var(--amber)}
+  nav.links{display:flex;align-items:center;gap:1.8rem}
+  nav.links a{color:var(--txt-mute);font-size:.92rem;font-weight:500;transition:color .15s}
+  nav.links a:hover{color:#fff}
+  .nav-cta{display:flex;align-items:center;gap:.8rem}
+  .nav-phone{color:#fff;font-weight:600;font-size:.95rem;display:flex;align-items:center;gap:.4rem}
+  .nav-phone svg{stroke:var(--amber)}
+  .menu-toggle{display:none;background:none;border:none;cursor:pointer;padding:6px}
+  .menu-toggle svg{stroke:#fff}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:
+      radial-gradient(1200px 500px at 78% -10%, rgba(242,169,59,.22), transparent 60%),
+      radial-gradient(800px 400px at 0% 110%, rgba(30,110,106,.20), transparent 55%),
+      var(--ink);
+    color:var(--txt-light);position:relative;overflow:hidden;
+  }
+  /* string-light signature */
+  .lights{position:absolute;inset:0 0 auto 0;height:120px;pointer-events:none;opacity:.9}
+  .hero-inner{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding:84px 0 92px}
+  .hero h1{font-size:clamp(2.6rem,5.4vw,4.4rem);font-weight:800;color:#fff;margin-bottom:1.1rem}
+  .hero h1 .hl{color:var(--amber)}
+  .hero .lede{font-size:1.18rem;color:var(--txt-mute);max-width:33ch;margin-bottom:2rem}
+  .hero-actions{display:flex;gap:.9rem;flex-wrap:wrap;margin-bottom:2.4rem}
+  .hero-trust{display:flex;gap:2rem;flex-wrap:wrap}
+  .hero-trust .stat .n{font-family:'Bricolage Grotesque';font-weight:800;font-size:1.9rem;color:#fff;line-height:1}
+  .hero-trust .stat .l{font-size:.8rem;color:var(--txt-mute);margin-top:.25rem}
+  /* hero card collage */
+  .hero-card{
+    background:var(--ink-2);border:1px solid var(--line);border-radius:20px;padding:18px;
+    box-shadow:var(--shadow);
+  }
+  .collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:130px 130px;gap:12px}
+  .ph{border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:12px;color:#fff;font-weight:600;font-size:.82rem;letter-spacing:.01em}
+  .ph::after{content:attr(data-tag);position:relative;z-index:2}
+  .ph .badge{position:absolute;top:10px;left:10px;z-index:2;background:rgba(0,0,0,.35);backdrop-filter:blur(4px);border-radius:999px;padding:.2rem .6rem;font-size:.7rem;font-weight:600}
+  .ph1{grid-row:span 2;background:linear-gradient(160deg,#33457a,#1c2540)}
+  .ph2{background:linear-gradient(160deg,#7a5418,#3a2a10)}
+  .ph3{background:linear-gradient(160deg,#1e6e6a,#123f3d)}
+  .ph-note{text-align:center;color:var(--txt-mute);font-size:.72rem;margin-top:12px}
+
+  /* ---------- Section scaffolding ---------- */
+  section{padding:84px 0}
+  .sec-head{max-width:680px;margin-bottom:48px}
+  .sec-head .eyebrow{color:var(--amber-deep)}
+  .sec-head h2{font-size:clamp(2rem,3.6vw,2.9rem);font-weight:700;margin:.6rem 0 .8rem;color:var(--txt-dark)}
+  .sec-head p{color:var(--txt-dark-mute);font-size:1.08rem}
+  .on-dark{background:var(--ink);color:var(--txt-light)}
+  .on-dark .sec-head h2{color:#fff}
+  .on-dark .sec-head p{color:var(--txt-mute)}
+  .on-dark .sec-head .eyebrow{color:var(--amber)}
+
+  /* ---------- Service categories ---------- */
+  .cats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .cat{
+    background:var(--paper);border:1px solid var(--line-dark);border-radius:var(--radius);
+    padding:26px 22px;transition:transform .18s ease,box-shadow .18s ease,border-color .18s;
+  }
+  .cat:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--amber)}
+  .cat .ic{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;margin-bottom:16px;background:var(--cream)}
+  .cat .ic svg{stroke:var(--ink);width:24px;height:24px}
+  .cat.teal .ic{background:rgba(30,110,106,.12)}
+  .cat.teal .ic svg{stroke:var(--teal)}
+  .cat h3{font-size:1.2rem;font-weight:700;margin-bottom:.4rem}
+  .cat p{font-size:.92rem;color:var(--txt-dark-mute)}
+
+  /* ---------- Quote builder (signature) ---------- */
+  .builder-grid{display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start}
+  .filters{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:24px}
+  .chip{
+    font-size:.85rem;font-weight:600;padding:.5rem 1rem;border-radius:999px;cursor:pointer;
+    border:1.5px solid var(--line);background:transparent;color:var(--txt-mute);transition:.15s;
+  }
+  .chip:hover{color:#fff;border-color:var(--txt-mute)}
+  .chip.active{background:var(--amber);color:#21160a;border-color:var(--amber)}
+  .items{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .item{
+    background:var(--ink-2);border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px;
+    display:flex;flex-direction:column;gap:6px;transition:border-color .15s;
+  }
+  .item:hover{border-color:var(--amber)}
+  .item .tag{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--amber)}
+  .item.teal .tag{color:#4fc3bd}
+  .item h4{font-family:'Inter';font-size:1rem;font-weight:600;color:#fff}
+  .item p{font-size:.82rem;color:var(--txt-mute);flex:1}
+  .item .add{
+    margin-top:6px;align-self:flex-start;background:transparent;border:1.5px solid var(--amber);
+    color:var(--amber);font-weight:600;font-size:.82rem;padding:.4rem .9rem;border-radius:999px;cursor:pointer;transition:.15s;
+    display:inline-flex;align-items:center;gap:.35rem;
+  }
+  .item .add:hover{background:var(--amber);color:#21160a}
+  .item .add.added{background:var(--teal);border-color:var(--teal);color:#fff}
+
+  /* quote cart */
+  .cart{
+    position:sticky;top:96px;background:var(--paper);border-radius:16px;padding:22px;box-shadow:var(--shadow);
+    color:var(--txt-dark);
+  }
+  .cart h3{font-size:1.15rem;margin-bottom:.2rem}
+  .cart .sub{font-size:.85rem;color:var(--txt-dark-mute);margin-bottom:16px}
+  .cart-list{display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto;margin-bottom:16px}
+  .cart-empty{color:var(--txt-dark-mute);font-size:.9rem;padding:18px 0;text-align:center;border:1.5px dashed var(--line-dark);border-radius:10px}
+  .cart-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--cream);border-radius:9px;padding:.5rem .7rem}
+  .cart-row .nm{font-size:.85rem;font-weight:500}
+  .cart-row .qty{display:flex;align-items:center;gap:.4rem}
+  .qbtn{width:24px;height:24px;border-radius:6px;border:1px solid var(--line-dark);background:#fff;cursor:pointer;font-weight:700;color:var(--ink);line-height:1}
+  .cart-row .ct{min-width:18px;text-align:center;font-weight:600;font-size:.85rem}
+  .cart .count-pill{background:var(--amber);color:#21160a;font-weight:700;font-size:.78rem;padding:.15rem .55rem;border-radius:999px}
+
+  /* ---------- Form ---------- */
+  .quote-form{background:var(--paper);border-radius:16px;padding:30px;box-shadow:var(--shadow);color:var(--txt-dark)}
+  .quote-form h3{font-size:1.4rem;margin-bottom:.3rem}
+  .quote-form .sub{color:var(--txt-dark-mute);margin-bottom:22px;font-size:.95rem}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:.82rem;font-weight:600;margin-bottom:.35rem;color:var(--txt-dark)}
+  .field input,.field textarea,.field select{
+    width:100%;padding:.75rem .85rem;border:1.5px solid var(--line-dark);border-radius:10px;
+    font-family:'Inter';font-size:.95rem;color:var(--txt-dark);background:#fff;transition:border-color .15s;
+  }
+  .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px rgba(242,169,59,.18)}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .selected-summary{background:var(--cream);border-radius:10px;padding:.8rem 1rem;font-size:.85rem;color:var(--txt-dark-mute);margin-bottom:16px}
+  .selected-summary strong{color:var(--txt-dark)}
+  .confirm{display:none;background:rgba(30,110,106,.1);border:1.5px solid var(--teal);border-radius:12px;padding:20px;color:var(--txt-dark)}
+  .confirm.show{display:block;animation:pop .3s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .confirm h4{font-size:1.1rem;margin-bottom:.4rem;color:var(--teal)}
+  .confirm pre{white-space:pre-wrap;font-family:'Inter';font-size:.82rem;color:var(--txt-dark-mute);margin-top:10px;background:#fff;border-radius:8px;padding:12px;border:1px solid var(--line-dark)}
+
+  /* ---------- Reviews ---------- */
+  .reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .review{background:var(--paper);border:1px solid var(--line-dark);border-radius:var(--radius);padding:24px}
+  .review .stars{color:var(--amber);letter-spacing:.1em;margin-bottom:10px;font-size:.9rem}
+  .review p{font-size:.95rem;color:var(--txt-dark);margin-bottom:14px}
+  .review .who{font-size:.85rem;font-weight:600}
+  .review .who span{color:var(--txt-dark-mute);font-weight:400}
+
+  /* ---------- Insta / CTA band ---------- */
+  .band{background:linear-gradient(135deg,var(--ink-2),var(--ink));border-radius:22px;padding:48px;display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;color:#fff}
+  .band h2{font-size:clamp(1.7rem,3vw,2.4rem);margin-bottom:.5rem}
+  .band p{color:var(--txt-mute);max-width:48ch}
+  .insta-handle{color:var(--amber);font-weight:600}
+
+  /* ---------- Footer ---------- */
+  footer.site{background:var(--ink);color:var(--txt-mute);padding:60px 0 30px}
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px;margin-bottom:40px}
+  footer .brand .name{font-size:1.3rem}
+  footer h5{color:#fff;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;font-weight:600}
+  footer ul{list-style:none}
+  footer ul li{margin-bottom:9px;font-size:.92rem}
+  footer a:hover{color:var(--amber)}
+  .foot-contact div{margin-bottom:9px;font-size:.92rem;display:flex;gap:.5rem;align-items:flex-start}
+  .foot-contact svg{stroke:var(--amber);flex-shrink:0;margin-top:3px}
+  .foot-bottom{border-top:1px solid var(--line);padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:.82rem}
+  .demo-tag{background:var(--amber);color:#21160a;font-weight:700;font-size:.72rem;padding:.2rem .6rem;border-radius:999px}
+
+  /* ---------- Responsive ---------- */
+  @media(max-width:920px){
+    nav.links{display:none}
+    .nav-phone{display:none}
+    .menu-toggle{display:block}
+    .hero-inner{grid-template-columns:1fr;padding:56px 0 64px}
+    .hero-card{order:-1;max-width:420px}
+    .cats{grid-template-columns:1fr 1fr}
+    .builder-grid{grid-template-columns:1fr}
+    .cart{position:relative;top:0}
+    .reviews{grid-template-columns:1fr}
+    .band{grid-template-columns:1fr;padding:32px}
+    .foot-grid{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:560px){
+    .items{grid-template-columns:1fr}
+    .cats{grid-template-columns:1fr}
+    .field-row{grid-template-columns:1fr}
+    .foot-grid{grid-template-columns:1fr}
+    .hero-trust{gap:1.3rem}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto}
+  }
+  /* mobile menu */
+  .mobile-menu{display:none;flex-direction:column;gap:2px;background:var(--ink-2);border-top:1px solid var(--line);padding:12px 0}
+  .mobile-menu.open{display:flex}
+  .mobile-menu a{color:var(--txt-light);padding:.7rem 24px;font-weight:500}
+  .mobile-menu a:hover{background:var(--ink-3)}
+</style>
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="site">
+  <div class="wrap nav">
+    <a href="#top" class="brand">
+      <div class="mark">Z</div>
+      <div class="name">Zumaya<span>.</span></div>
+    </a>
+    <nav class="links">
+      <a href="#services">Services</a>
+      <a href="#catalog">Build a Quote</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#quote">Get a Quote</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="tel:5629030858" class="nav-phone">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        (562) 903-0858
+      </a>
+      <a href="#quote" class="btn btn-amber btn-sm">Get a Quote</a>
+      <button class="menu-toggle" aria-label="Open menu" onclick="document.getElementById('mm').classList.toggle('open')">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mm">
+    <a href="#services" onclick="document.getElementById('mm').classList.remove('open')">Services</a>
+    <a href="#catalog" onclick="document.getElementById('mm').classList.remove('open')">Build a Quote</a>
+    <a href="#reviews" onclick="document.getElementById('mm').classList.remove('open')">Reviews</a>
+    <a href="tel:5629030858">Call (562) 903-0858</a>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="top" style="padding:0">
+  <svg class="lights" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,20 Q360,90 720,30 T1440,28" fill="none" stroke="rgba(242,169,59,.35)" stroke-width="1.5"/>
+    <g fill="#F2A93B">
+      <circle cx="120" cy="46" r="4"/><circle cx="280" cy="62" r="4"/><circle cx="440" cy="64" r="4"/>
+      <circle cx="600" cy="52" r="4"/><circle cx="760" cy="40" r="4"/><circle cx="920" cy="40" r="4"/>
+      <circle cx="1080" cy="46" r="4"/><circle cx="1240" cy="44" r="4"/><circle cx="1400" cy="36" r="4"/>
+    </g>
+  </svg>
+  <div class="wrap hero-inner">
+    <div>
+      <h1>One vendor for <span class="hl">the whole event.</span></h1>
+      <p class="lede">Tables, tents, luxury restroom trailers, film-production gear, and clean-up bins — delivered and set up across Southern California.</p>
+      <div class="hero-actions">
+        <a href="#catalog" class="btn btn-amber">Build your quote</a>
+        <a href="tel:5629030858" class="btn btn-ghost">Call (562) 903-0858</a>
+      </div>
+      <div class="hero-trust">
+        <div class="stat"><div class="n">18</div><div class="l">Years of experience</div></div>
+        <div class="stat"><div class="n">5.0★</div><div class="l">Yelp rating</div></div>
+        <div class="stat"><div class="n">SoCal</div><div class="l">Delivery &amp; setup</div></div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="collage">
+        <div class="ph ph1" data-tag="Tents &amp; tables"><span class="badge">Events</span></div>
+        <div class="ph ph2" data-tag="Restroom trailers"><span class="badge">Luxury</span></div>
+        <div class="ph ph3" data-tag="Production gear"><span class="badge">Film</span></div>
+      </div>
+      <div class="ph-note">Demo placeholders — drop in Zumaya's real event photos here</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SERVICES ================= -->
+<section id="services">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">What we rent</div>
+      <h2>Four ways we show up for your event</h2>
+      <p>Most rental companies do one thing. Zumaya covers the whole job — from the seating to the restrooms to the dumpster the next morning.</p>
+    </div>
+    <div class="cats">
+      <div class="cat">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6"/></svg></div>
+        <h3>Events &amp; Parties</h3>
+        <p>Pole tents, canopies, farm &amp; round tables, Chiavari chairs, draping, dance floors, string lighting, and mister fans.</p>
+      </div>
+      <div class="cat">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 3v18M14 11h2"/></svg></div>
+        <h3>Luxury Restroom Trailers</h3>
+        <p>2-stall, 3-stall, and ADA restroom trailers, plus portable restrooms and handwash stations for any guest count.</p>
+      </div>
+      <div class="cat teal">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></div>
+        <h3>Production &amp; Film</h3>
+        <p>On-location rentals for film &amp; TV — honeywagons, production restrooms, light towers, generators, crew tables and canopies.</p>
+      </div>
+      <div class="cat">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18l-1.5 13a2 2 0 0 1-2 1.8H6.5a2 2 0 0 1-2-1.8L3 6zM8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
+        <h3>Dumpsters &amp; Bins</h3>
+        <p>3-yard bins and roll-off dumpsters so the clean-up is handled before you've even left the venue.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= QUOTE BUILDER (signature) ================= -->
+<section id="catalog" class="on-dark">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Build your quote</div>
+      <h2>Pick your gear. We'll price it.</h2>
+      <p>Add the items you need to your list, then send it over. No account, no pressure — just a fast, accurate quote.</p>
+    </div>
+    <div class="builder-grid">
+      <div>
+        <div class="filters" id="filters">
+          <button class="chip active" data-cat="all">All</button>
+          <button class="chip" data-cat="events">Events &amp; Parties</button>
+          <button class="chip" data-cat="restroom">Restroom Trailers</button>
+          <button class="chip" data-cat="production">Production &amp; Film</button>
+          <button class="chip" data-cat="bins">Dumpsters &amp; Bins</button>
+        </div>
+        <div class="items" id="items"><!-- JS injects items --></div>
+      </div>
+      <aside class="cart">
+        <h3>Your quote list <span class="count-pill" id="cartCount">0</span></h3>
+        <p class="sub">Adjust quantities, then jump to the form.</p>
+        <div class="cart-list" id="cartList">
+          <div class="cart-empty" id="cartEmpty">Nothing added yet — pick items from the catalog.</div>
+        </div>
+        <a href="#quote" class="btn btn-amber" style="width:100%;justify-content:center" onclick="syncSummary()">Continue to quote form</a>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ================= QUOTE FORM ================= -->
+<section id="quote">
+  <div class="wrap" style="max-width:720px">
+    <div class="sec-head" style="text-align:center;margin:0 auto 40px">
+      <div class="eyebrow" style="color:var(--amber-deep)">Request a quote</div>
+      <h2>Tell us about your event</h2>
+      <p>We'll get back to you with availability and pricing, usually same day.</p>
+    </div>
+    <div class="quote-form">
+      <div class="selected-summary" id="formSummary"><strong>No items selected yet.</strong> You can still send a quote request, or <a href="#catalog" style="color:var(--amber-deep);font-weight:600">build a list first</a>.</div>
+      <div class="field-row">
+        <div class="field"><label for="fname">Your name</label><input id="fname" type="text" placeholder="First &amp; last"></div>
+        <div class="field"><label for="fphone">Phone</label><input id="fphone" type="tel" placeholder="(555) 555-5555"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="femail">Email</label><input id="femail" type="email" placeholder="you@email.com"></div>
+        <div class="field"><label for="fzip">Delivery ZIP</label><input id="fzip" type="text" placeholder="90602"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="fdate">Event date</label><input id="fdate" type="date"></div>
+        <div class="field"><label for="ftype">Event type</label>
+          <select id="ftype">
+            <option value="">Select…</option>
+            <option>Quinceañera</option><option>Wedding</option><option>Graduation</option>
+            <option>Birthday / Family party</option><option>Corporate / Community</option>
+            <option>Film / Production</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label for="fnotes">Anything else? (guest count, venue, special requests)</label><textarea id="fnotes" rows="3" placeholder="~150 guests, backyard in Whittier, need setup by 4pm…"></textarea></div>
+      <button class="btn btn-dark" style="width:100%;justify-content:center" onclick="submitQuote()">Send my quote request</button>
+      <div class="confirm" id="confirm">
+        <h4>✓ Quote request ready</h4>
+        <p style="font-size:.9rem;color:var(--txt-dark-mute)">This is the demo preview of what gets sent to Zumaya. In production this submits to email/CRM automatically.</p>
+        <pre id="confirmBody"></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= REVIEWS ================= -->
+<section id="reviews" style="background:var(--paper)">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">5.0 on Yelp</div>
+      <h2>SoCal trusts Zumaya with the big days</h2>
+    </div>
+    <div class="reviews">
+      <div class="review">
+        <div class="stars">★★★★★</div>
+        <p>They made my daughter's graduation set-up go so smoothly, and the whole thing looked beautiful. Thank you for making her day so lovely.</p>
+        <div class="who">Crystal T. <span>· Graduation, Whittier</span></div>
+      </div>
+      <div class="review">
+        <div class="stars">★★★★★</div>
+        <p>Ordered farm tables and chairs from Gerardo — excellent service, and the delivery crew was friendly, professional, and helpful.</p>
+        <div class="who">Vee V. <span>· Backyard event</span></div>
+      </div>
+      <div class="review">
+        <div class="stars">★★★★★</div>
+        <p>We forgot about the heat for our outdoor gathering. Carlos and his team came to the rescue with mister fans in under an hour.</p>
+        <div class="who">Yelp reviewer <span>· Park event</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INSTAGRAM BAND ================= -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="band">
+      <div>
+        <h2>See setups before you book</h2>
+        <p>Every tent, trailer, and tablescape we deliver ends up on our feed. Follow <span class="insta-handle">@zumayarentals</span> for real events across Southern California.</p>
+      </div>
+      <a href="https://www.instagram.com/zumayarentals/" target="_blank" rel="noopener" class="btn btn-amber">Follow on Instagram</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a href="#top" class="brand" style="margin-bottom:14px"><div class="mark">Z</div><div class="name">Zumaya<span>.</span></div></a>
+        <p style="font-size:.92rem;max-width:34ch">Family-run event, restroom-trailer, and production rentals serving Whittier and all of Southern California.</p>
+      </div>
+      <div>
+        <h5>Services</h5>
+        <ul>
+          <li><a href="#services">Events &amp; Parties</a></li>
+          <li><a href="#services">Luxury Restroom Trailers</a></li>
+          <li><a href="#services">Production &amp; Film</a></li>
+          <li><a href="#services">Dumpsters &amp; Bins</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Get in touch</h5>
+        <div class="foot-contact">
+          <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg> (562) 903-0858</div>
+          <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg> rentals@zumayarentals.com</div>
+          <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> 12435 Mar Vista St, Whittier, CA 90602</div>
+          <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Mon–Fri 6AM–6PM</div>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>© 2026 Zumaya Rentals Inc. · Whittier, CA</div>
+      <div><span class="demo-tag">DEMO</span> &nbsp;beta.zumayarentals.com — concept site, not live</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ---------- Catalog data ----------
+  const CATALOG = [
+    {id:'round-table', cat:'events', tag:'Events', name:'Round Tables (60")', desc:'Seats 8–10 guests. Linens available.'},
+    {id:'farm-table', cat:'events', tag:'Events', name:'Farm / Banquet Tables', desc:'Rustic wood farm tables and 6\u2013 8ft banquet tables.'},
+    {id:'chairs', cat:'events', tag:'Events', name:'Folding & Chiavari Chairs', desc:'White, natural, or gold Chiavari seating.'},
+    {id:'tent', cat:'events', tag:'Events', name:'Pole Tents & Canopies', desc:'10x10 pop-ups up to 20x40 pole tents.'},
+    {id:'draping', cat:'events', tag:'Events', name:'Draping & Pipe-and-Drape', desc:'Backdrops, ceiling draping, and dividers.'},
+    {id:'lighting', cat:'events', tag:'Events', name:'String Lighting', desc:'Warm bistro string lights for any space.'},
+    {id:'misters', cat:'events', tag:'Events', name:'Mister Fans', desc:'Power-only cooling — no water source needed.'},
+    {id:'heaters', cat:'events', tag:'Events', name:'Patio Heaters', desc:'Keep guests comfortable after sunset.'},
+    {id:'rt2', cat:'restroom', tag:'Restroom', name:'2-Stall Restroom Trailer', desc:'Great for mid-size gatherings.'},
+    {id:'rt3', cat:'restroom', tag:'Restroom', name:'3-Stall Restroom Trailer', desc:'For larger weddings and events.'},
+    {id:'ada', cat:'restroom', tag:'Restroom', name:'ADA Restroom Trailer', desc:'Wheelchair-accessible, code-compliant.'},
+    {id:'porta', cat:'restroom', tag:'Restroom', name:'Portable Restroom', desc:'Standalone units and handwash stations.'},
+    {id:'honeywagon', cat:'production', tag:'Production', name:'Honeywagon', desc:'Multi-room unit for cast & crew on set.'},
+    {id:'prod-rt', cat:'production', tag:'Production', name:'Production Restroom Trailer', desc:'On-location restroom service for shoots.'},
+    {id:'light-tower', cat:'production', tag:'Production', name:'Light Tower', desc:'Tow-behind lighting for night work.'},
+    {id:'generator', cat:'production', tag:'Production', name:'Generator', desc:'Quiet power for location production.'},
+    {id:'bin3', cat:'bins', tag:'Bins', name:'3-Yard Bin', desc:'Compact clean-up for events and sites.'},
+    {id:'rolloff', cat:'bins', tag:'Bins', name:'Roll-off Dumpster', desc:'Larger debris and tear-down hauling.'},
+  ];
+
+  const cart = {}; // id -> qty
+  let activeCat = 'all';
+
+  const itemsEl = document.getElementById('items');
+  const cartListEl = document.getElementById('cartList');
+  const cartEmptyEl = document.getElementById('cartEmpty');
+  const cartCountEl = document.getElementById('cartCount');
+
+  function renderItems(){
+    const list = CATALOG.filter(i => activeCat==='all' || i.cat===activeCat);
+    itemsEl.innerHTML = list.map(i => `
+      <div class="item ${i.cat==='production'?'teal':''}">
+        <div class="tag">${i.tag}</div>
+        <h4>${i.name}</h4>
+        <p>${i.desc}</p>
+        <button class="add ${cart[i.id]?'added':''}" onclick="addItem('${i.id}')">
+          ${cart[i.id] ? '✓ Added' : '+ Add to quote'}
+        </button>
+      </div>`).join('');
+  }
+
+  function addItem(id){
+    cart[id] = (cart[id]||0) + 1;
+    renderItems(); renderCart();
+  }
+  function changeQty(id, d){
+    cart[id] = (cart[id]||0) + d;
+    if(cart[id] <= 0) delete cart[id];
+    renderItems(); renderCart();
+  }
+  function renderCart(){
+    const ids = Object.keys(cart);
+    const total = ids.reduce((s,id)=>s+cart[id],0);
+    cartCountEl.textContent = total;
+    if(ids.length===0){
+      cartListEl.innerHTML = '<div class="cart-empty">Nothing added yet — pick items from the catalog.</div>';
+      syncSummary(); return;
+    }
+    cartListEl.innerHTML = ids.map(id=>{
+      const it = CATALOG.find(c=>c.id===id);
+      return `<div class="cart-row">
+        <span class="nm">${it.name}</span>
+        <span class="qty">
+          <button class="qbtn" onclick="changeQty('${id}',-1)">\u2212</button>
+          <span class="ct">${cart[id]}</span>
+          <button class="qbtn" onclick="changeQty('${id}',1)">+</button>
+        </span>
+      </div>`;
+    }).join('');
+    syncSummary();
+  }
+
+  function syncSummary(){
+    const ids = Object.keys(cart);
+    const el = document.getElementById('formSummary');
+    if(ids.length===0){
+      el.innerHTML = '<strong>No items selected yet.</strong> You can still send a quote request, or <a href="#catalog" style="color:var(--amber-deep);font-weight:600">build a list first</a>.';
+      return;
+    }
+    const lines = ids.map(id=>`${CATALOG.find(c=>c.id===id).name} \u00d7 ${cart[id]}`);
+    el.innerHTML = `<strong>${ids.length} item${ids.length>1?'s':''} on your list:</strong> ${lines.join(' · ')}`;
+  }
+
+  // filters
+  document.getElementById('filters').addEventListener('click', e=>{
+    if(!e.target.classList.contains('chip')) return;
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    e.target.classList.add('active');
+    activeCat = e.target.dataset.cat;
+    renderItems();
+  });
+
+  function submitQuote(){
+    const get = id => document.getElementById(id).value.trim();
+    const ids = Object.keys(cart);
+    const itemLines = ids.length
+      ? ids.map(id=>`  • ${CATALOG.find(c=>c.id===id).name} × ${cart[id]}`).join('\n')
+      : '  (none selected)';
+    const body =
+`NEW QUOTE REQUEST — Zumaya Rentals
+----------------------------------
+Name:        ${get('fname')||'—'}
+Phone:       ${get('fphone')||'—'}
+Email:       ${get('femail')||'—'}
+Delivery ZIP:${get('fzip')||'—'}
+Event date:  ${get('fdate')||'—'}
+Event type:  ${get('ftype')||'—'}
+
+Requested items:
+${itemLines}
+
+Notes: ${get('fnotes')||'—'}`;
+    document.getElementById('confirmBody').textContent = body;
+    document.getElementById('confirm').classList.add('show');
+    document.getElementById('confirm').scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  renderItems(); renderCart();
+</script>
+</body>
+</html>
