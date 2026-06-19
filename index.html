@@ -203,6 +203,10 @@
   @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   .confirm h4{font-size:1.1rem;margin-bottom:.4rem;color:var(--teal)}
   .confirm pre{white-space:pre-wrap;font-family:'Inter';font-size:.82rem;color:var(--txt-dark-mute);margin-top:10px;background:#fff;border-radius:8px;padding:12px;border:1px solid var(--line-dark)}
+  .form-error{display:none;color:#9b1c12;background:rgba(155,28,18,.07);border:1.5px solid rgba(155,28,18,.28);border-radius:10px;padding:.8rem 1rem;font-size:.88rem;margin-top:14px}
+  .form-error.show{display:block;animation:pop .3s ease}
+  .field input.invalid,.field select.invalid{border-color:#9b1c12;box-shadow:0 0 0 3px rgba(155,28,18,.14)}
+  .btn[disabled]{opacity:.6;cursor:not-allowed;transform:none!important}
 
   /* ---------- Reviews ---------- */
   .reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
@@ -403,20 +407,22 @@
       <h2>Tell us about your event</h2>
       <p>We'll get back to you with availability and pricing, usually same day.</p>
     </div>
-    <div class="quote-form">
+    <form class="quote-form" id="quoteForm" novalidate>
       <div class="selected-summary" id="formSummary"><strong>No items selected yet.</strong> You can still send a quote request, or <a href="#catalog" style="color:var(--amber-deep);font-weight:600">build a list first</a>.</div>
+      <!-- Honeypot: hidden from people, catches spam bots -->
+      <input type="text" name="_gotcha" id="gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
       <div class="field-row">
-        <div class="field"><label for="fname">Your name</label><input id="fname" type="text" placeholder="First &amp; last"></div>
-        <div class="field"><label for="fphone">Phone</label><input id="fphone" type="tel" placeholder="(555) 555-5555"></div>
+        <div class="field"><label for="fname">Your name</label><input id="fname" name="name" type="text" placeholder="First &amp; last" required></div>
+        <div class="field"><label for="fphone">Phone</label><input id="fphone" name="phone" type="tel" placeholder="(555) 555-5555"></div>
       </div>
       <div class="field-row">
-        <div class="field"><label for="femail">Email</label><input id="femail" type="email" placeholder="you@email.com"></div>
-        <div class="field"><label for="fzip">Delivery ZIP</label><input id="fzip" type="text" placeholder="90602"></div>
+        <div class="field"><label for="femail">Email</label><input id="femail" name="email" type="email" placeholder="you@email.com" required></div>
+        <div class="field"><label for="fzip">Delivery ZIP</label><input id="fzip" name="zip" type="text" placeholder="90602"></div>
       </div>
       <div class="field-row">
-        <div class="field"><label for="fdate">Event date</label><input id="fdate" type="date"></div>
+        <div class="field"><label for="fdate">Event date</label><input id="fdate" name="event_date" type="date"></div>
         <div class="field"><label for="ftype">Event type</label>
-          <select id="ftype">
+          <select id="ftype" name="event_type">
             <option value="">Select…</option>
             <option>Quinceañera</option><option>Wedding</option><option>Graduation</option>
             <option>Birthday / Family party</option><option>Corporate / Community</option>
@@ -424,14 +430,15 @@
           </select>
         </div>
       </div>
-      <div class="field"><label for="fnotes">Anything else? (guest count, venue, special requests)</label><textarea id="fnotes" rows="3" placeholder="~150 guests, backyard in Whittier, need setup by 4pm…"></textarea></div>
-      <button class="btn btn-dark" style="width:100%;justify-content:center" onclick="submitQuote()">Send my quote request</button>
+      <div class="field"><label for="fnotes">Anything else? (guest count, venue, special requests)</label><textarea id="fnotes" name="notes" rows="3" placeholder="~150 guests, backyard in Whittier, need setup by 4pm…"></textarea></div>
+      <button type="submit" id="submitBtn" class="btn btn-dark" style="width:100%;justify-content:center">Send my quote request</button>
+      <div class="form-error" id="formError" role="alert"></div>
       <div class="confirm" id="confirm">
-        <h4>✓ Quote request ready</h4>
-        <p style="font-size:.9rem;color:var(--txt-dark-mute)">This is the demo preview of what gets sent to Zumaya. In production this submits to email/CRM automatically.</p>
+        <h4>✓ Quote request sent</h4>
+        <p style="font-size:.9rem;color:var(--txt-dark-mute)">Thanks — your request is on its way to the Zumaya team. Here's a copy of what was sent:</p>
         <pre id="confirmBody"></pre>
       </div>
-    </div>
+    </form>
   </div>
 </section>
 
@@ -504,7 +511,7 @@
     </div>
     <div class="foot-bottom">
       <div>© 2026 Zumaya Rentals Inc. · Whittier, CA</div>
-      <div><span class="demo-tag">DEMO</span> &nbsp;beta.zumayarentals.com — concept site, not live</div>
+      <div><span class="demo-tag">DEMO</span> &nbsp;zumaya.vercel.app — concept site for the Zumaya team</div>
     </div>
   </div>
 </footer>
@@ -604,30 +611,103 @@
     renderItems();
   });
 
-  function submitQuote(){
+  // ---------- Formspree submission ----------
+  const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xdavqwon';
+
+  function showError(msg){
+    const el = document.getElementById('formError');
+    el.textContent = msg;
+    el.classList.add('show');
+    el.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+  function clearError(){
+    document.getElementById('formError').classList.remove('show');
+    document.querySelectorAll('.field .invalid').forEach(f=>f.classList.remove('invalid'));
+  }
+
+  document.getElementById('quoteForm').addEventListener('submit', async function(e){
+    e.preventDefault(); // never let the browser navigate away
+    clearError();
+
+    // Honeypot — if a bot filled the hidden field, silently stop
+    if(document.getElementById('gotcha').value) return;
+
     const get = id => document.getElementById(id).value.trim();
+    const name = get('fname'), email = get('femail');
+
+    // Lightweight validation
+    let firstBad = null;
+    if(!name){ document.getElementById('fname').classList.add('invalid'); firstBad = firstBad||'fname'; }
+    if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ document.getElementById('femail').classList.add('invalid'); firstBad = firstBad||'femail'; }
+    if(firstBad){
+      document.getElementById(firstBad).focus();
+      showError('Please add your name and a valid email so the Zumaya team can reach you.');
+      return;
+    }
+
+    // Build the equipment list from the quote cart
     const ids = Object.keys(cart);
-    const itemLines = ids.length
-      ? ids.map(id=>`  • ${CATALOG.find(c=>c.id===id).name} × ${cart[id]}`).join('\n')
-      : '  (none selected)';
-    const body =
-`NEW QUOTE REQUEST — Zumaya Rentals
-----------------------------------
-Name:        ${get('fname')||'—'}
-Phone:       ${get('fphone')||'—'}
-Email:       ${get('femail')||'—'}
-Delivery ZIP:${get('fzip')||'—'}
-Event date:  ${get('fdate')||'—'}
-Event type:  ${get('ftype')||'—'}
+    const equipment = ids.length
+      ? ids.map(id=>`${CATALOG.find(c=>c.id===id).name} x ${cart[id]}`).join('\n')
+      : '(none selected)';
+
+    const payload = {
+      name,
+      email,
+      phone: get('fphone') || '—',
+      zip: get('fzip') || '—',
+      event_date: get('fdate') || '—',
+      event_type: get('ftype') || '—',
+      equipment,
+      notes: get('fnotes') || '—',
+      _subject: `New quote request from ${name} — Zumaya Rentals`
+    };
+
+    const btn = document.getElementById('submitBtn');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    try{
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if(res.ok){
+        // Success — show confirmation copy of what was sent
+        const body =
+`Name:         ${payload.name}
+Phone:        ${payload.phone}
+Email:        ${payload.email}
+Delivery ZIP: ${payload.zip}
+Event date:   ${payload.event_date}
+Event type:   ${payload.event_type}
 
 Requested items:
-${itemLines}
+${ids.length ? ids.map(id=>`  • ${CATALOG.find(c=>c.id===id).name} × ${cart[id]}`).join('\n') : '  (none selected)'}
 
-Notes: ${get('fnotes')||'—'}`;
-    document.getElementById('confirmBody').textContent = body;
-    document.getElementById('confirm').classList.add('show');
-    document.getElementById('confirm').scrollIntoView({behavior:'smooth', block:'center'});
-  }
+Notes: ${payload.notes}`;
+        document.getElementById('confirmBody').textContent = body;
+        document.getElementById('confirm').classList.add('show');
+        document.getElementById('confirm').scrollIntoView({behavior:'smooth', block:'center'});
+        document.getElementById('quoteForm').reset();
+      } else {
+        // Formspree returned an error (e.g. validation, inactive form)
+        let msg = 'Something went wrong sending your request. Please call us at (562) 903-0858.';
+        try{
+          const data = await res.json();
+          if(data && data.errors && data.errors.length) msg = data.errors.map(x=>x.message).join(' ');
+        }catch(_){}
+        btn.disabled = false; btn.textContent = originalText;
+        showError(msg);
+      }
+    }catch(err){
+      btn.disabled = false; btn.textContent = originalText;
+      showError('Network problem — please check your connection or call (562) 903-0858.');
+    }
+  });
 
   renderItems(); renderCart();
 </script>
