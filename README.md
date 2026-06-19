@@ -1,42 +1,40 @@
 # Zumaya Rentals — Demo Site
 
-Concept homepage for **Zumaya Rentals Inc.** (Whittier, CA), intended to be deployed
-to `beta.zumayarentals.com` as a private preview before going live.
+Concept homepage for **Zumaya Rentals Inc.** (Whittier, CA), deployed as a live
+team demo at **https://zumaya.vercel.app**.
 
-A single self-contained `index.html` — no build step, no dependencies, no framework.
-Just open the file in a browser, or drop it on any static host.
+A static site — no build step, no framework. `index.html` plus an `images/` folder.
 
 ## What's here
 
-- **`index.html`** — the full homepage:
-  - Four service lines: Events & Parties, Luxury Restroom Trailers, Production & Film, Dumpsters & Bins
-  - Interactive **"Build Your Quote"** catalog (filter, add items, adjust quantities) that feeds the quote form
-  - Quote request form (demo preview — see *To do* below)
-  - Reviews, Instagram tie-in, consistent name/address/phone
+- **`index.html`** — the full homepage
+- **`images/`** — 49 web-optimized equipment photos (from Zumaya's May 2026 price list)
+
+### Features
+- Four service lines: Events & Parties, Luxury Restroom Trailers, Production & Film, Dumpsters & Bins
+- Interactive **"Build Your Quote"** catalog — 49 real items across 8 categories, with
+  real photos and rental pricing (1 day / 2 days / 3 days–weekly)
+- Quote request form wired to **Formspree** (`xdavqwon`); the selected equipment list
+  rides along in the submission
+- Reviews, Instagram tie-in, and the correct name/address/phone block
 
 ## Local preview
 
-Open `index.html` directly, or serve it:
-
 ```bash
-python3 -m http.server 8000
-# then visit http://localhost:8000
+python3 -m http.server 8000   # then open http://localhost:8000
 ```
 
-## Deploy to beta.zumayarentals.com
+## Deploy (Vercel)
 
-1. Push this repo to a static host (Netlify, Vercel, or Cloudflare Pages — all free for this).
-2. In the **Namecheap** account that holds `zumayarentals.com`, open **Advanced DNS**.
-3. Add a **CNAME** record: host `beta`, value = the address your host gives you.
-4. Add `beta.zumayarentals.com` as a custom domain in the host's dashboard.
+Already live at zumaya.vercel.app. If the project is linked to GitHub, pushing to the
+default branch auto-deploys. To attach a custom domain later, add it under
+**Settings → Domains** and create the CNAME Vercel provides in Namecheap.
 
-## To do before launch
+## Notes / next steps
 
-- [ ] Replace placeholder photo blocks with Zumaya's real event photos
-- [ ] Confirm the correct phone number (site shows 562-903-0858; Yelp shows 562-331-2336)
-- [ ] Wire the quote form to a real backend (Netlify Forms / Formspree / CRM) — it's a demo preview right now
-- [ ] Confirm the equipment catalog list matches current inventory
+- [ ] First Formspree submission must be confirmed once (verification email) before leads flow through
+- [ ] Pricing reflects the May 2026 list — keep in sync as rates change
+- [ ] Optional: add a rental-duration toggle that totals an estimated subtotal
+- [ ] Optional: lifestyle/hero photography from real Zumaya events
 
-## Notes
-
-This is a **private** preview, not the production site. The footer is tagged "DEMO" until launch.
+Pricing source: Zumaya Rentals price list, May 2026. Delivery, services & tax are additional.

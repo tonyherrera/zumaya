@@ -108,12 +108,11 @@
     box-shadow:var(--shadow);
   }
   .collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:130px 130px;gap:12px}
-  .ph{border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:12px;color:#fff;font-weight:600;font-size:.82rem;letter-spacing:.01em}
-  .ph::after{content:attr(data-tag);position:relative;z-index:2}
-  .ph .badge{position:absolute;top:10px;left:10px;z-index:2;background:rgba(0,0,0,.35);backdrop-filter:blur(4px);border-radius:999px;padding:.2rem .6rem;font-size:.7rem;font-weight:600}
-  .ph1{grid-row:span 2;background:linear-gradient(160deg,#33457a,#1c2540)}
-  .ph2{background:linear-gradient(160deg,#7a5418,#3a2a10)}
-  .ph3{background:linear-gradient(160deg,#1e6e6a,#123f3d)}
+  .ph{border-radius:12px;position:relative;overflow:hidden;background:#fff}
+  .ph img{width:100%;height:100%;object-fit:cover}
+  .ph .badge{position:absolute;bottom:10px;left:10px;z-index:2;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);border-radius:999px;padding:.25rem .7rem;font-size:.7rem;font-weight:600;color:#fff}
+  .ph1{grid-row:span 2}
+  .ph1 img{object-position:center}
   .ph-note{text-align:center;color:var(--txt-mute);font-size:.72rem;margin-top:12px}
 
   /* ---------- Section scaffolding ---------- */
@@ -150,18 +149,23 @@
   }
   .chip:hover{color:#fff;border-color:var(--txt-mute)}
   .chip.active{background:var(--amber);color:#21160a;border-color:var(--amber)}
-  .items{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .items{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
   .item{
-    background:var(--ink-2);border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px;
-    display:flex;flex-direction:column;gap:6px;transition:border-color .15s;
+    background:var(--ink-2);border:1px solid var(--line);border-radius:12px;padding:0;overflow:hidden;
+    display:flex;flex-direction:column;transition:border-color .15s;
   }
   .item:hover{border-color:var(--amber)}
-  .item .tag{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--amber)}
+  .item .thumb{background:#fff;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .item .thumb img{width:100%;height:100%;object-fit:contain;mix-blend-mode:normal}
+  .item .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .item .tag{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--amber)}
   .item.teal .tag{color:#4fc3bd}
-  .item h4{font-family:'Inter';font-size:1rem;font-weight:600;color:#fff}
-  .item p{font-size:.82rem;color:var(--txt-mute);flex:1}
+  .item h4{font-family:'Inter';font-size:1rem;font-weight:600;color:#fff;line-height:1.2}
+  .item .price{font-size:.9rem;color:#fff;font-weight:600}
+  .item .price .from{color:var(--txt-mute);font-weight:400;font-size:.78rem}
+  .item .tiers{font-size:.72rem;color:var(--txt-mute);margin-top:-2px}
   .item .add{
-    margin-top:6px;align-self:flex-start;background:transparent;border:1.5px solid var(--amber);
+    margin-top:8px;align-self:flex-start;background:transparent;border:1.5px solid var(--amber);
     color:var(--amber);font-weight:600;font-size:.82rem;padding:.4rem .9rem;border-radius:999px;cursor:pointer;transition:.15s;
     display:inline-flex;align-items:center;gap:.35rem;
   }
@@ -244,6 +248,7 @@
     .hero-card{order:-1;max-width:420px}
     .cats{grid-template-columns:1fr 1fr}
     .builder-grid{grid-template-columns:1fr}
+    .items{grid-template-columns:repeat(2,1fr)}
     .cart{position:relative;top:0}
     .reviews{grid-template-columns:1fr}
     .band{grid-template-columns:1fr;padding:32px}
@@ -326,11 +331,11 @@
     </div>
     <div class="hero-card">
       <div class="collage">
-        <div class="ph ph1" data-tag="Tents &amp; tables"><span class="badge">Events</span></div>
-        <div class="ph ph2" data-tag="Restroom trailers"><span class="badge">Luxury</span></div>
-        <div class="ph ph3" data-tag="Production gear"><span class="badge">Film</span></div>
+        <div class="ph ph1"><img src="images/restroom-3unit.jpg" alt="Restroom trailer"><span class="badge">Restroom trailers</span></div>
+        <div class="ph ph2"><img src="images/tent-10x20.jpg" alt="Event tent"><span class="badge">Tents</span></div>
+        <div class="ph ph3"><img src="images/makeup-station.jpg" alt="Production makeup station"><span class="badge">Production</span></div>
       </div>
-      <div class="ph-note">Demo placeholders — drop in Zumaya's real event photos here</div>
+      <div class="ph-note">Real gear from the Zumaya inventory</div>
     </div>
   </div>
 </section>
@@ -352,12 +357,12 @@
       <div class="cat">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 3v18M14 11h2"/></svg></div>
         <h3>Luxury Restroom Trailers</h3>
-        <p>2-stall, 3-stall, and ADA restroom trailers, plus portable restrooms and handwash stations for any guest count.</p>
+        <p>2-, 3-, and 4-unit restroom trailers with full service, delivery, and refueling for weddings, events, and film sets.</p>
       </div>
       <div class="cat teal">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></div>
         <h3>Production &amp; Film</h3>
-        <p>On-location rentals for film &amp; TV — honeywagons, production restrooms, light towers, generators, crew tables and canopies.</p>
+        <p>On-location gear for film &amp; TV — restroom trailers, generators &amp; power stations, AC units, makeup stations, and director chairs.</p>
       </div>
       <div class="cat">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18l-1.5 13a2 2 0 0 1-2 1.8H6.5a2 2 0 0 1-2-1.8L3 6zM8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
@@ -374,16 +379,20 @@
     <div class="sec-head">
       <div class="eyebrow">Build your quote</div>
       <h2>Pick your gear. We'll price it.</h2>
-      <p>Add the items you need to your list, then send it over. No account, no pressure — just a fast, accurate quote.</p>
+      <p>Add the items you need to your list, then send it over. No account, no pressure — just a fast, accurate quote. Prices shown are rental rates; delivery, services &amp; tax are additional.</p>
     </div>
     <div class="builder-grid">
       <div>
         <div class="filters" id="filters">
           <button class="chip active" data-cat="all">All</button>
-          <button class="chip" data-cat="events">Events &amp; Parties</button>
           <button class="chip" data-cat="restroom">Restroom Trailers</button>
-          <button class="chip" data-cat="production">Production &amp; Film</button>
-          <button class="chip" data-cat="bins">Dumpsters &amp; Bins</button>
+          <button class="chip" data-cat="tents">Tents &amp; Accessories</button>
+          <button class="chip" data-cat="tables">Tables &amp; Chairs</button>
+          <button class="chip" data-cat="power">Power &amp; Lighting</button>
+          <button class="chip" data-cat="climate">Heating &amp; Cooling</button>
+          <button class="chip" data-cat="production">Production &amp; Makeup</button>
+          <button class="chip" data-cat="essentials">Essentials &amp; Safety</button>
+          <button class="chip" data-cat="waste">Waste &amp; Dumpsters</button>
         </div>
         <div class="items" id="items"><!-- JS injects items --></div>
       </div>
@@ -504,7 +513,7 @@
         <div class="foot-contact">
           <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg> (562) 903-0858</div>
           <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg> rentals@zumayarentals.com</div>
-          <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> 12435 Mar Vista St, Whittier, CA 90602</div>
+          <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> 7343 Pierce Ave, Whittier, CA 90602</div>
           <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Mon–Fri 6AM–6PM</div>
         </div>
       </div>
@@ -517,27 +526,69 @@
 </footer>
 
 <script>
-  // ---------- Catalog data ----------
+  // ---------- Catalog data (from Zumaya price list, May 2026) ----------
+  // tiers: [1 day, 2 days, 3 days/weekly]; trailers are flat per-day
   const CATALOG = [
-    {id:'round-table', cat:'events', tag:'Events', name:'Round Tables (60")', desc:'Seats 8–10 guests. Linens available.'},
-    {id:'farm-table', cat:'events', tag:'Events', name:'Farm / Banquet Tables', desc:'Rustic wood farm tables and 6\u2013 8ft banquet tables.'},
-    {id:'chairs', cat:'events', tag:'Events', name:'Folding & Chiavari Chairs', desc:'White, natural, or gold Chiavari seating.'},
-    {id:'tent', cat:'events', tag:'Events', name:'Pole Tents & Canopies', desc:'10x10 pop-ups up to 20x40 pole tents.'},
-    {id:'draping', cat:'events', tag:'Events', name:'Draping & Pipe-and-Drape', desc:'Backdrops, ceiling draping, and dividers.'},
-    {id:'lighting', cat:'events', tag:'Events', name:'String Lighting', desc:'Warm bistro string lights for any space.'},
-    {id:'misters', cat:'events', tag:'Events', name:'Mister Fans', desc:'Power-only cooling — no water source needed.'},
-    {id:'heaters', cat:'events', tag:'Events', name:'Patio Heaters', desc:'Keep guests comfortable after sunset.'},
-    {id:'rt2', cat:'restroom', tag:'Restroom', name:'2-Stall Restroom Trailer', desc:'Great for mid-size gatherings.'},
-    {id:'rt3', cat:'restroom', tag:'Restroom', name:'3-Stall Restroom Trailer', desc:'For larger weddings and events.'},
-    {id:'ada', cat:'restroom', tag:'Restroom', name:'ADA Restroom Trailer', desc:'Wheelchair-accessible, code-compliant.'},
-    {id:'porta', cat:'restroom', tag:'Restroom', name:'Portable Restroom', desc:'Standalone units and handwash stations.'},
-    {id:'honeywagon', cat:'production', tag:'Production', name:'Honeywagon', desc:'Multi-room unit for cast & crew on set.'},
-    {id:'prod-rt', cat:'production', tag:'Production', name:'Production Restroom Trailer', desc:'On-location restroom service for shoots.'},
-    {id:'light-tower', cat:'production', tag:'Production', name:'Light Tower', desc:'Tow-behind lighting for night work.'},
-    {id:'generator', cat:'production', tag:'Production', name:'Generator', desc:'Quiet power for location production.'},
-    {id:'bin3', cat:'bins', tag:'Bins', name:'3-Yard Bin', desc:'Compact clean-up for events and sites.'},
-    {id:'rolloff', cat:'bins', tag:'Bins', name:'Roll-off Dumpster', desc:'Larger debris and tear-down hauling.'},
+    // Restroom Trailers
+    {id:'rt4', cat:'restroom', tag:'Restroom Trailer', name:'4-Unit Restroom Trailer', img:'restroom-4unit', from:'$950', unit:'/day'},
+    {id:'rt3', cat:'restroom', tag:'Restroom Trailer', name:'3-Unit Restroom Trailer', img:'restroom-3unit', from:'$850', unit:'/day'},
+    {id:'rt2', cat:'restroom', tag:'Restroom Trailer', name:'2-Unit Restroom Trailer', img:'restroom-2unit', from:'$750', unit:'/day'},
+    // Tents & accessories
+    {id:'tent1010', cat:'tents', tag:'Tents', name:'Tent 10×10 (Blue / Black / White)', img:'tent-10x10', tiers:['$35','$70','$105']},
+    {id:'tent1020', cat:'tents', tag:'Tents', name:'Tent 10×20 (Blue / Black / White)', img:'tent-10x20', tiers:['$60','$120','$180']},
+    {id:'sidewalls', cat:'tents', tag:'Tent Accessory', name:'Side Walls', img:'side-walls', tiers:['$7','$14','$21']},
+    {id:'sandbags', cat:'tents', tag:'Tent Accessory', name:'Sandbags', img:'sandbags', tiers:['$3.50','$7','$10.50']},
+    {id:'barrels', cat:'tents', tag:'Tent Accessory', name:'Water Barrels (no water)', img:'water-barrels', tiers:['$25','$35','$45']},
+    // Tables & chairs
+    {id:'tbl6', cat:'tables', tag:'Tables', name:'Folding Table 6 ft', img:'table-6ft', tiers:['$8','$16','$24']},
+    {id:'tbl8', cat:'tables', tag:'Tables', name:'Folding Table 8 ft', img:'table-8ft', tiers:['$11','$22','$33']},
+    {id:'tblround', cat:'tables', tag:'Tables', name:'Round Table', img:'table-round', tiers:['$15','$30','$45']},
+    {id:'tblsingle', cat:'tables', tag:'Tables', name:'Single Table', img:'table-single', tiers:['$4','$8','$12']},
+    {id:'chfold', cat:'tables', tag:'Chairs', name:'Folding Chairs', img:'chairs-folding', tiers:['$2','$4','$6']},
+    {id:'chchiavari', cat:'tables', tag:'Chairs', name:'Chiavari Chairs', img:'chairs-chiavari', tiers:['$12','$24','$36']},
+    {id:'chresin', cat:'tables', tag:'Chairs', name:'Resin Chairs', img:'chairs-resin', tiers:['$5','$10','$15']},
+    // Power & Lighting
+    {id:'glowbugs', cat:'power', tag:'Lighting', name:'Glowbugs Balloon Light', img:'glowbugs', tiers:['$155','$310','$465']},
+    {id:'gen2000', cat:'power', tag:'Generators', name:'Generator 2000 W', img:'generator-2000w', tiers:['$70','$140','$210']},
+    {id:'gen3500', cat:'power', tag:'Generators', name:'Generator 3500 W', img:'generator-3500w', tiers:['$85','$170','$255']},
+    {id:'gen7500', cat:'power', tag:'Generators', name:'Generator 7500 W', img:'generator-7500w', tiers:['$230','$460','$690']},
+    {id:'powerstation', cat:'power', tag:'Generators', name:'Power Station (limited qty)', img:'power-station', tiers:['$265','$530','$795']},
+    {id:'dishlights', cat:'power', tag:'Lighting', name:'Dish Lights', img:'dish-lights', tiers:['$3','$6','$9']},
+    {id:'stringlights', cat:'power', tag:'Lighting', name:'String Lights', img:'string-lights', tiers:['$10','$20','$30']},
+    {id:'worklightsac', cat:'power', tag:'Lighting', name:'Electric Work Lights', img:'work-lights-electric', tiers:['$10','$20','$30']},
+    {id:'worklightsbatt', cat:'power', tag:'Lighting', name:'Battery Work Lights', img:'work-lights-battery', tiers:['$30','$60','$90']},
+    {id:'extcords', cat:'power', tag:'Lighting', name:'Extension Cords', img:'extension-cords', from:'$5', unit:'/day'},
+    // Heating & Cooling
+    {id:'heatdish', cat:'climate', tag:'Heating', name:'Dish Electric Heater', img:'heater-dish', tiers:['$8','$16','$24']},
+    {id:'heatdolly', cat:'climate', tag:'Heating', name:'Dolly Heater w/ Propane', img:'heater-dolly', tiers:['$75','$110','$145']},
+    {id:'heatbox', cat:'climate', tag:'Heating', name:'Box Heater', img:'heater-box', tiers:['$135','$270','$405']},
+    {id:'propane', cat:'climate', tag:'Heating', name:'Spare Propane Tank', img:'propane-tank', from:'$45', unit:'/day'},
+    {id:'acunit', cat:'climate', tag:'Cooling', name:'AC Unit', img:'ac-unit', tiers:['$155','$310','$465']},
+    {id:'boxfan', cat:'climate', tag:'Cooling', name:'Box Fan', img:'box-fan', tiers:['$7','$14','$21']},
+    {id:'mistfan', cat:'climate', tag:'Cooling', name:'Misting Fan', img:'misting-fan', tiers:['$65','$130','$195']},
+    {id:'duct6', cat:'climate', tag:'Cooling', name:'Duct Hose 6"', img:'duct-hose-6', from:'Call', unit:''},
+    {id:'duct12', cat:'climate', tag:'Cooling', name:'Duct Hose 12"', img:'duct-hose-12', from:'Call', unit:''},
+    // Production & Makeup
+    {id:'makeupcart', cat:'production', tag:'Production', name:'Makeup Station Cart', img:'makeup-station', tiers:['$35','$70','$105']},
+    {id:'dirshort', cat:'production', tag:'Production', name:'Short Director Chair', img:'director-short', tiers:['$5.50','$11','$16.50']},
+    {id:'dirtall', cat:'production', tag:'Production', name:'Tall Director Chair', img:'director-tall', tiers:['$6.50','$13','$19.50']},
+    // Essentials & Safety
+    {id:'wardrobe', cat:'essentials', tag:'Essentials', name:'Wardrobe Rack', img:'wardrobe-rack', tiers:['$10','$20','$30']},
+    {id:'astroturf', cat:'essentials', tag:'Essentials', name:'Astro Turf', img:'astro-turf', tiers:['$25','$50','$75']},
+    {id:'sanitstation', cat:'essentials', tag:'Essentials', name:'Hand Sanitizer Station', img:'sanitizer-station', tiers:['$25','$50','$75']},
+    {id:'sanitdisp', cat:'essentials', tag:'Essentials', name:'Hand Sanitizer Dispenser', img:'sanitizer-dispenser', tiers:['$75','$150','$225']},
+    {id:'fire5', cat:'essentials', tag:'Safety', name:'Fire Extinguisher 5 lbs', img:'fire-ext-5', tiers:['$15','$30','$45']},
+    {id:'fire10', cat:'essentials', tag:'Safety', name:'Fire Extinguisher 10 lbs', img:'fire-ext-10', tiers:['$25','$50','$75']},
+    {id:'buttercan', cat:'essentials', tag:'Safety', name:'Butt Can Tower', img:'butter-can-tower', tiers:['$8','$16','$24']},
+    {id:'locomatt', cat:'essentials', tag:'Safety', name:'Loco Matt', img:'loco-matt', tiers:['$4','$8','$12']},
+    {id:'cones', cat:'essentials', tag:'Safety', name:'Orange Cones', img:'orange-cones', tiers:['$1.50','$3','$4.50']},
+    {id:'barricades', cat:'essentials', tag:'Safety', name:'Barricades', img:'barricades', tiers:['$6','$12','$18']},
+    // Waste
+    {id:'dumpster', cat:'waste', tag:'Waste', name:'Dumpster 3 yd (Blue/Black/Green)', img:'dumpster-3yd', from:'$195', unit:'/day'},
+    {id:'trashcan', cat:'waste', tag:'Waste', name:'Trash Can 33 gal', img:'trash-can', tiers:['$5','$10','$15']},
   ];
+
+  const TEAL_CATS = ['production'];
 
   const cart = {}; // id -> qty
   let activeCat = 'all';
@@ -547,16 +598,28 @@
   const cartEmptyEl = document.getElementById('cartEmpty');
   const cartCountEl = document.getElementById('cartCount');
 
+  function priceLine(i){
+    if(i.tiers){
+      return `<div class="price"><span class="from">from</span> ${i.tiers[0]}<span class="from">/day</span></div>
+              <div class="tiers">1 day ${i.tiers[0]} · 2 days ${i.tiers[1]} · 3 days/wk ${i.tiers[2]}</div>`;
+    }
+    if(i.from==='Call') return `<div class="price"><span class="from">Call for pricing</span></div>`;
+    return `<div class="price">${i.from}<span class="from">${i.unit||''}</span></div>`;
+  }
+
   function renderItems(){
     const list = CATALOG.filter(i => activeCat==='all' || i.cat===activeCat);
     itemsEl.innerHTML = list.map(i => `
-      <div class="item ${i.cat==='production'?'teal':''}">
-        <div class="tag">${i.tag}</div>
-        <h4>${i.name}</h4>
-        <p>${i.desc}</p>
-        <button class="add ${cart[i.id]?'added':''}" onclick="addItem('${i.id}')">
-          ${cart[i.id] ? '✓ Added' : '+ Add to quote'}
-        </button>
+      <div class="item ${TEAL_CATS.includes(i.cat)?'teal':''}">
+        <div class="thumb"><img src="images/${i.img}.jpg" alt="${i.name}" loading="lazy"></div>
+        <div class="body">
+          <div class="tag">${i.tag}</div>
+          <h4>${i.name}</h4>
+          ${priceLine(i)}
+          <button class="add ${cart[i.id]?'added':''}" onclick="addItem('${i.id}')">
+            ${cart[i.id] ? '✓ Added' : '+ Add to quote'}
+          </button>
+        </div>
       </div>`).join('');
   }
 
