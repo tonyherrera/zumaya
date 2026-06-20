@@ -122,6 +122,17 @@
 
   .hidden{display:none}
   .empty{color:var(--txt-dark-mute);font-size:.85rem;font-style:italic;padding:8px 0}
+
+  /* Password gate */
+  #gate{position:fixed;inset:0;z-index:100;background:var(--ink);display:flex;align-items:center;justify-content:center;padding:20px}
+  #gate .card{background:var(--paper);border-radius:18px;padding:34px 30px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+  #gate .mark{width:46px;height:46px;border-radius:12px;background:var(--amber);color:#21160a;display:grid;place-items:center;font-weight:800;font-size:1.4rem;margin:0 auto 14px}
+  #gate h1{margin:0 0 4px;font-size:1.3rem;color:var(--txt-dark)}
+  #gate p{margin:0 0 20px;color:var(--txt-dark-mute);font-size:.88rem}
+  #gate input{width:100%;text-align:center;font-size:1rem;margin-bottom:10px}
+  #gate button{width:100%}
+  #gateErr{color:var(--red);font-size:.82rem;min-height:18px;margin-top:8px}
+  .gate-locked{overflow:hidden}
   footer{padding:26px 0;text-align:center;color:var(--txt-dark-mute);font-size:.78rem;border-top:1px solid var(--line)}
 
   @media(max-width:860px){
@@ -132,7 +143,20 @@
   }
 </style>
 </head>
-<body>
+<body class="gate-locked">
+
+<!-- ===== PASSWORD GATE (client-side, demo only) ===== -->
+<div id="gate">
+  <div class="card">
+    <div class="mark">Z</div>
+    <h1>Zumaya Dispatch</h1>
+    <p>Staff access only. Enter the password to continue.</p>
+    <input type="password" id="gatePw" placeholder="Password" autofocus
+      onkeydown="if(event.key==='Enter')tryUnlock()" />
+    <button class="btn btn-amber" onclick="tryUnlock()">Unlock</button>
+    <div id="gateErr"></div>
+  </div>
+</div>
 
 <header>
   <div class="wrap">
@@ -238,6 +262,34 @@
 </footer>
 
 <script>
+/* ---------- Password gate (client-side, demo only) ----------
+   Stores only the SHA-256 hash of the password, never the plaintext.
+   To change the password: run  printf '%s' 'NEWPASSWORD' | sha256sum
+   and paste the resulting hash into PW_HASH below. */
+const PW_HASH = '347e0a0a2d62169d40c41b97d9c245b85eec64c0435502a344a9181e2f5714aa'; // 'zumaya2026'
+const GATE_KEY = 'zumaya_dispatch_unlocked';
+async function sha256(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function unlock(){
+  document.getElementById('gate').style.display='none';
+  document.body.classList.remove('gate-locked');
+}
+async function tryUnlock(){
+  const pw = document.getElementById('gatePw').value;
+  const err = document.getElementById('gateErr');
+  if(await sha256(pw)===PW_HASH){
+    sessionStorage.setItem(GATE_KEY,'1');
+    unlock();
+  } else {
+    err.textContent='Incorrect password.';
+    document.getElementById('gatePw').value='';
+  }
+}
+if(sessionStorage.getItem(GATE_KEY)==='1'){ unlock(); }
+else { window.addEventListener('DOMContentLoaded',()=>document.getElementById('gatePw').focus()); }
+
 /* ---------- Catalog (Zumaya price list, May 2026) + on-hand stock ---------- */
 const CATALOG = [
   {id:'rt4', cat:'restroom', label:'Restroom Trailers', tag:'Restroom Trailer', name:'4-Unit Restroom Trailer', stock:1},
