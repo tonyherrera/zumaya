@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Zumaya Dispatch — Internal Board & Inventory</title>
+<style>
+  :root{
+    --ink:#131A2C; --ink-2:#1C2540; --ink-3:#28324f;
+    --amber:#F2A93B; --amber-deep:#E08A1E; --teal:#1E6E6A;
+    --cream:#F7F3EB; --paper:#FFFFFF;
+    --line:#E3DCCB; --line-d:#2c3654;
+    --txt-light:#EDE9DF; --txt-mute:#A9B0C4;
+    --txt-dark:#1B2235; --txt-dark-mute:#5A6275;
+    --green:#2E7D5B; --green-bg:#E5F2EB;
+    --blue:#2C5BA8; --blue-bg:#E6EEFA;
+    --red:#B23A3A; --red-bg:#FBE9E9;
+    --shadow:0 10px 30px rgba(19,26,44,.10);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--cream);color:var(--txt-dark);-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+  /* Header */
+  header{background:var(--ink);color:var(--txt-light);position:sticky;top:0;z-index:30;border-bottom:1px solid var(--line-d)}
+  .bar{display:flex;align-items:center;gap:18px;height:62px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem}
+  .brand .mark{width:30px;height:30px;border-radius:8px;background:var(--amber);color:#21160a;
+    display:grid;place-items:center;font-weight:800}
+  .brand .name span{color:var(--amber)}
+  .badge-internal{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink);background:var(--amber);padding:3px 8px;border-radius:999px}
+  .bar .spacer{flex:1}
+  .bar a.back{font-size:.85rem;color:var(--txt-mute)}
+  .bar a.back:hover{color:#fff}
+
+  /* Tabs */
+  .tabs{display:flex;gap:6px;padding:14px 0 0}
+  .tab{padding:.6rem 1.1rem;border-radius:10px 10px 0 0;font-weight:600;font-size:.95rem;
+    color:var(--txt-mute);cursor:pointer;border:1px solid transparent;border-bottom:none}
+  .tab.active{background:var(--cream);color:var(--txt-dark)}
+
+  /* Stat strip */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0 6px}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .stat .n{font-size:1.7rem;font-weight:800;color:var(--ink)}
+  .stat .l{font-size:.78rem;color:var(--txt-dark-mute);margin-top:2px}
+  .stat .n .u{font-size:.9rem;font-weight:600;color:var(--txt-dark-mute)}
+
+  .toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:22px 0 14px}
+  .toolbar h2{font-size:1.3rem;margin:0;font-weight:700}
+  .toolbar .spacer{flex:1}
+  label.fld{font-size:.78rem;color:var(--txt-dark-mute);display:flex;flex-direction:column;gap:4px}
+  input,select,textarea{font-family:inherit;font-size:.92rem;padding:.5rem .7rem;border:1.5px solid var(--line);
+    border-radius:9px;background:#fff;color:var(--txt-dark)}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--amber)}
+
+  .btn{border:none;border-radius:10px;padding:.6rem 1.1rem;font-weight:600;font-size:.9rem;cursor:pointer;transition:.15s}
+  .btn-amber{background:var(--amber);color:#21160a}
+  .btn-amber:hover{background:var(--amber-deep)}
+  .btn-dark{background:var(--ink);color:#fff}
+  .btn-ghost{background:transparent;color:var(--txt-dark-mute);border:1.5px solid var(--line)}
+  .btn-ghost:hover{border-color:var(--txt-dark-mute)}
+  .btn-sm{padding:.4rem .7rem;font-size:.8rem;border-radius:8px}
+
+  /* Board */
+  .board{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start;padding-bottom:60px}
+  .col h3{font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;color:var(--txt-dark-mute);
+    margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .col h3 .dot{width:9px;height:9px;border-radius:50%}
+  .dot.booked{background:var(--blue)} .dot.out{background:var(--amber-deep)} .dot.returned{background:var(--green)}
+  .job{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .job.overdue{border-color:var(--red)}
+  .job .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  .job .cust{font-weight:700;font-size:1rem;line-height:1.2}
+  .job .type{font-size:.74rem;color:var(--amber-deep);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  .job .meta{font-size:.8rem;color:var(--txt-dark-mute);margin:8px 0;line-height:1.5}
+  .job .meta b{color:var(--txt-dark);font-weight:600}
+  .pill{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px}
+  .pill.booked{background:var(--blue-bg);color:var(--blue)}
+  .pill.out{background:#FBF0DC;color:var(--amber-deep)}
+  .pill.returned{background:var(--green-bg);color:var(--green)}
+  .pill.warn{background:var(--red-bg);color:var(--red)}
+  .items-list{font-size:.8rem;color:var(--txt-dark);margin:8px 0 0;padding:8px 0 0;border-top:1px dashed var(--line)}
+  .items-list .it{display:flex;justify-content:space-between;padding:1px 0}
+  .items-list .it .q{color:var(--txt-dark-mute)}
+  .job .actions{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+
+  /* Inventory table */
+  table{width:100%;border-collapse:collapse;background:var(--paper);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+  thead th{background:var(--ink-2);color:var(--txt-light);font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;
+    text-align:left;padding:11px 14px;font-weight:600}
+  thead th.num{text-align:right}
+  tbody td{padding:10px 14px;border-bottom:1px solid var(--line);font-size:.9rem}
+  tbody td.num{text-align:right;font-variant-numeric:tabular-nums}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr.cat-head td{background:var(--cream);font-weight:700;font-size:.78rem;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--txt-dark-mute)}
+  .avail{font-weight:700;padding:2px 9px;border-radius:999px;font-size:.82rem}
+  .avail.ok{background:var(--green-bg);color:var(--green)}
+  .avail.low{background:#FBF0DC;color:var(--amber-deep)}
+  .avail.none{background:var(--red-bg);color:var(--red)}
+  .itemname{font-weight:600}
+  .itemtag{font-size:.72rem;color:var(--txt-dark-mute)}
+
+  /* Modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(19,26,44,.55);z-index:50;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:40px 16px}
+  .modal-bg.open{display:flex}
+  .modal{background:var(--paper);border-radius:16px;max-width:620px;width:100%;padding:24px}
+  .modal h3{margin:0 0 4px;font-size:1.3rem}
+  .modal p.sub{margin:0 0 18px;color:var(--txt-dark-mute);font-size:.9rem}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .modal label.fld{margin-bottom:0}
+  .itempick{max-height:230px;overflow:auto;border:1.5px solid var(--line);border-radius:10px;padding:8px;margin-top:6px}
+  .itempick .row{display:flex;align-items:center;gap:8px;padding:3px 4px;font-size:.85rem}
+  .itempick .row span{flex:1}
+  .itempick .row input{width:66px;padding:.3rem .4rem}
+  .modal .foot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+
+  .hidden{display:none}
+  .empty{color:var(--txt-dark-mute);font-size:.85rem;font-style:italic;padding:8px 0}
+  footer{padding:26px 0;text-align:center;color:var(--txt-dark-mute);font-size:.78rem;border-top:1px solid var(--line)}
+
+  @media(max-width:860px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .board{grid-template-columns:1fr}
+    .grid2{grid-template-columns:1fr}
+    .bar .badge-internal{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="bar">
+      <a href="#" class="brand"><span class="mark">Z</span><span class="name">Zumaya<span>.</span></span></a>
+      <span class="badge-internal">Dispatch · Internal</span>
+      <div class="spacer"></div>
+      <a class="back" href="index.html">← Public site</a>
+    </div>
+    <div class="tabs">
+      <div class="tab active" data-view="board" onclick="setView('board')">Dispatch Board</div>
+      <div class="tab" data-view="inventory" onclick="setView('inventory')">Inventory</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===== BOARD VIEW ===== -->
+  <section id="view-board">
+    <div class="stats" id="boardStats"></div>
+    <div class="toolbar">
+      <h2>Jobs</h2>
+      <div class="spacer"></div>
+      <button class="btn btn-amber" onclick="openJobModal()">+ New job</button>
+      <button class="btn btn-ghost" onclick="resetData()">Reset demo</button>
+    </div>
+    <div class="board">
+      <div class="col"><h3><span class="dot booked"></span>Booked</h3><div id="col-booked"></div></div>
+      <div class="col"><h3><span class="dot out"></span>Out / On site</h3><div id="col-out"></div></div>
+      <div class="col"><h3><span class="dot returned"></span>Returned</h3><div id="col-returned"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== INVENTORY VIEW ===== -->
+  <section id="view-inventory" class="hidden">
+    <div class="toolbar">
+      <h2>Inventory availability</h2>
+      <div class="spacer"></div>
+      <label class="fld">Check availability on
+        <input type="date" id="availDate" onchange="renderInventory()" />
+      </label>
+    </div>
+    <p class="empty" id="availNote"></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th class="num">On hand</th>
+          <th class="num">Reserved</th>
+          <th class="num">Available</th>
+        </tr>
+      </thead>
+      <tbody id="invBody"></tbody>
+    </table>
+    <div style="height:50px"></div>
+  </section>
+
+</main>
+
+<!-- ===== JOB MODAL ===== -->
+<div class="modal-bg" id="jobModal">
+  <div class="modal">
+    <h3 id="jmTitle">New job</h3>
+    <p class="sub">Add a booking to the dispatch board. Items selected here count against inventory.</p>
+    <div class="grid2">
+      <label class="fld">Customer
+        <input id="jmCustomer" placeholder="e.g. Morales family" />
+      </label>
+      <label class="fld">Event type
+        <select id="jmType">
+          <option>Quinceañera</option><option>Wedding</option><option>Graduation</option>
+          <option>Birthday / Family party</option><option>Corporate / Community</option>
+          <option>Film / Production</option><option>Other</option>
+        </select>
+      </label>
+      <label class="fld">Delivery date
+        <input type="date" id="jmDeliver" />
+      </label>
+      <label class="fld">Pickup date
+        <input type="date" id="jmPickup" />
+      </label>
+      <label class="fld">Site / address
+        <input id="jmAddress" placeholder="City or venue" />
+      </label>
+      <label class="fld">Crew
+        <input id="jmCrew" placeholder="e.g. Gerardo + Luis" />
+      </label>
+    </div>
+    <label class="fld" style="margin-top:12px">Items
+      <div class="itempick" id="jmItems"></div>
+    </label>
+    <div class="foot">
+      <button class="btn btn-ghost" onclick="closeJobModal()">Cancel</button>
+      <button class="btn btn-amber" onclick="saveJob()">Save job</button>
+    </div>
+  </div>
+</div>
+
+<footer class="wrap">
+  Zumaya Rentals — internal dispatch demo · Data stored locally in this browser ·
+  <a href="index.html" style="color:var(--amber-deep);font-weight:600">Public site</a>
+</footer>
+
+<script>
+/* ---------- Catalog (Zumaya price list, May 2026) + on-hand stock ---------- */
+const CATALOG = [
+  {id:'rt4', cat:'restroom', label:'Restroom Trailers', tag:'Restroom Trailer', name:'4-Unit Restroom Trailer', stock:1},
+  {id:'rt3', cat:'restroom', label:'Restroom Trailers', tag:'Restroom Trailer', name:'3-Unit Restroom Trailer', stock:2},
+  {id:'rt2', cat:'restroom', label:'Restroom Trailers', tag:'Restroom Trailer', name:'2-Unit Restroom Trailer', stock:2},
+
+  {id:'tent1010', cat:'tents', label:'Tents & Accessories', tag:'Tents', name:'Tent 10×10', stock:20},
+  {id:'tent1020', cat:'tents', label:'Tents & Accessories', tag:'Tents', name:'Tent 10×20', stock:10},
+  {id:'sidewalls', cat:'tents', label:'Tents & Accessories', tag:'Tent Accessory', name:'Side Walls', stock:60},
+  {id:'sandbags', cat:'tents', label:'Tents & Accessories', tag:'Tent Accessory', name:'Sandbags', stock:200},
+  {id:'barrels', cat:'tents', label:'Tents & Accessories', tag:'Tent Accessory', name:'Water Barrels', stock:30},
+
+  {id:'tbl6', cat:'tables', label:'Tables & Chairs', tag:'Tables', name:'Folding Table 6 ft', stock:120},
+  {id:'tbl8', cat:'tables', label:'Tables & Chairs', tag:'Tables', name:'Folding Table 8 ft', stock:80},
+  {id:'tblround', cat:'tables', label:'Tables & Chairs', tag:'Tables', name:'Round Table', stock:60},
+  {id:'tblsingle', cat:'tables', label:'Tables & Chairs', tag:'Tables', name:'Single Table', stock:20},
+  {id:'chfold', cat:'tables', label:'Tables & Chairs', tag:'Chairs', name:'Folding Chairs', stock:800},
+  {id:'chchiavari', cat:'tables', label:'Tables & Chairs', tag:'Chairs', name:'Chiavari Chairs', stock:200},
+  {id:'chresin', cat:'tables', label:'Tables & Chairs', tag:'Chairs', name:'Resin Chairs', stock:300},
+
+  {id:'glowbugs', cat:'power', label:'Power & Lighting', tag:'Lighting', name:'Glowbugs Balloon Light', stock:6},
+  {id:'gen2000', cat:'power', label:'Power & Lighting', tag:'Generators', name:'Generator 2000 W', stock:8},
+  {id:'gen3500', cat:'power', label:'Power & Lighting', tag:'Generators', name:'Generator 3500 W', stock:6},
+  {id:'gen7500', cat:'power', label:'Power & Lighting', tag:'Generators', name:'Generator 7500 W', stock:3},
+  {id:'powerstation', cat:'power', label:'Power & Lighting', tag:'Generators', name:'Power Station', stock:2},
+  {id:'dishlights', cat:'power', label:'Power & Lighting', tag:'Lighting', name:'Dish Lights', stock:40},
+  {id:'stringlights', cat:'power', label:'Power & Lighting', tag:'Lighting', name:'String Lights', stock:30},
+  {id:'worklightsac', cat:'power', label:'Power & Lighting', tag:'Lighting', name:'Electric Work Lights', stock:20},
+  {id:'worklightsbatt', cat:'power', label:'Power & Lighting', tag:'Lighting', name:'Battery Work Lights', stock:12},
+  {id:'extcords', cat:'power', label:'Power & Lighting', tag:'Lighting', name:'Extension Cords', stock:50},
+
+  {id:'heatdish', cat:'climate', label:'Heating & Cooling', tag:'Heating', name:'Dish Electric Heater', stock:20},
+  {id:'heatdolly', cat:'climate', label:'Heating & Cooling', tag:'Heating', name:'Dolly Heater w/ Propane', stock:8},
+  {id:'heatbox', cat:'climate', label:'Heating & Cooling', tag:'Heating', name:'Box Heater', stock:6},
+  {id:'propane', cat:'climate', label:'Heating & Cooling', tag:'Heating', name:'Spare Propane Tank', stock:30},
+  {id:'acunit', cat:'climate', label:'Heating & Cooling', tag:'Cooling', name:'AC Unit', stock:4},
+  {id:'boxfan', cat:'climate', label:'Heating & Cooling', tag:'Cooling', name:'Box Fan', stock:40},
+  {id:'mistfan', cat:'climate', label:'Heating & Cooling', tag:'Cooling', name:'Misting Fan', stock:12},
+  {id:'duct6', cat:'climate', label:'Heating & Cooling', tag:'Cooling', name:'Duct Hose 6"', stock:6},
+  {id:'duct12', cat:'climate', label:'Heating & Cooling', tag:'Cooling', name:'Duct Hose 12"', stock:6},
+
+  {id:'makeupcart', cat:'production', label:'Production & Makeup', tag:'Production', name:'Makeup Station Cart', stock:6},
+  {id:'dirshort', cat:'production', label:'Production & Makeup', tag:'Production', name:'Short Director Chair', stock:30},
+  {id:'dirtall', cat:'production', label:'Production & Makeup', tag:'Production', name:'Tall Director Chair', stock:30},
+
+  {id:'wardrobe', cat:'essentials', label:'Essentials & Safety', tag:'Essentials', name:'Wardrobe Rack', stock:20},
+  {id:'astroturf', cat:'essentials', label:'Essentials & Safety', tag:'Essentials', name:'Astro Turf', stock:30},
+  {id:'sanitstation', cat:'essentials', label:'Essentials & Safety', tag:'Essentials', name:'Hand Sanitizer Station', stock:20},
+  {id:'sanitdisp', cat:'essentials', label:'Essentials & Safety', tag:'Essentials', name:'Hand Sanitizer Dispenser', stock:15},
+  {id:'fire5', cat:'essentials', label:'Essentials & Safety', tag:'Safety', name:'Fire Extinguisher 5 lbs', stock:30},
+  {id:'fire10', cat:'essentials', label:'Essentials & Safety', tag:'Safety', name:'Fire Extinguisher 10 lbs', stock:20},
+  {id:'buttercan', cat:'essentials', label:'Essentials & Safety', tag:'Safety', name:'Butt Can Tower', stock:15},
+  {id:'locomatt', cat:'essentials', label:'Essentials & Safety', tag:'Safety', name:'Loco Matt', stock:40},
+  {id:'cones', cat:'essentials', label:'Essentials & Safety', tag:'Safety', name:'Orange Cones', stock:200},
+  {id:'barricades', cat:'essentials', label:'Essentials & Safety', tag:'Safety', name:'Barricades', stock:40},
+
+  {id:'dumpster', cat:'waste', label:'Dumpsters & Bins', tag:'Waste', name:'Dumpster 3 yd', stock:8},
+  {id:'trashcan', cat:'waste', label:'Dumpsters & Bins', tag:'Waste', name:'Trash Can 33 gal', stock:60},
+];
+const byId = Object.fromEntries(CATALOG.map(i=>[i.id,i]));
+
+/* ---------- Seed jobs (relative to today) ---------- */
+function iso(d){return d.toISOString().slice(0,10);}
+function addDays(base,n){const d=new Date(base);d.setDate(d.getDate()+n);return iso(d);}
+const TODAY = new Date();
+
+function seedJobs(){
+  return [
+    {id:'j1', customer:'City of Whittier — Summer Concert', type:'Corporate / Community',
+     deliver:addDays(TODAY,0), pickup:addDays(TODAY,2), address:'Central Park, Whittier', crew:'Carlos + Miguel',
+     status:'out', items:{tent1010:6, tbl6:30, chfold:300, gen7500:1, barricades:20, cones:40, trashcan:12, rt3:1}},
+
+    {id:'j2', customer:'A24 — On-location Shoot', type:'Film / Production',
+     deliver:addDays(TODAY,-1), pickup:addDays(TODAY,1), address:'Arts District, Downtown LA', crew:'Carlos',
+     status:'out', items:{makeupcart:4, dirtall:12, dirshort:10, wardrobe:6, gen3500:2, worklightsbatt:6, rt3:1}},
+
+    {id:'j3', customer:'Morales Quinceañera', type:'Quinceañera',
+     deliver:addDays(TODAY,1), pickup:addDays(TODAY,3), address:'Backyard, Whittier', crew:'Gerardo + Luis',
+     status:'booked', items:{tent1020:2, tblround:12, chchiavari:120, stringlights:6, glowbugs:2, mistfan:4, rt2:1}},
+
+    {id:'j4', customer:'Industry Tech — Corporate BBQ', type:'Corporate / Community',
+     deliver:addDays(TODAY,2), pickup:addDays(TODAY,2), address:'City of Industry', crew:'Miguel',
+     status:'booked', items:{tent1020:1, tbl6:12, chfold:100, boxfan:6, trashcan:6, rt2:1}},
+
+    {id:'j5', customer:'Vega Wedding', type:'Wedding',
+     deliver:addDays(TODAY,7), pickup:addDays(TODAY,9), address:'Private estate, Montebello', crew:'Gerardo + Luis',
+     status:'booked', items:{tent1020:4, tblround:20, chchiavari:200, stringlights:12, glowbugs:4, acunit:2, rt4:1}},
+
+    {id:'j6', customer:'Reyes Graduation', type:'Graduation',
+     deliver:addDays(TODAY,-6), pickup:addDays(TODAY,-4), address:'Pico Rivera', crew:'Luis',
+     status:'returned', items:{tent1010:3, tbl6:10, chfold:80, mistfan:2, trashcan:4}},
+
+    {id:'j7', customer:'Nguyen Birthday', type:'Birthday / Family party',
+     deliver:addDays(TODAY,8), pickup:addDays(TODAY,9), address:'La Mirada', crew:'Luis',
+     status:'booked', items:{tent1010:2, tblround:6, chresin:48, stringlights:4, trashcan:4}},
+  ];
+}
+
+/* ---------- State / persistence ---------- */
+const KEY='zumaya_dispatch_v1';
+let JOBS=[];
+function load(){
+  try{const raw=localStorage.getItem(KEY);JOBS=raw?JSON.parse(raw):seedJobs();}
+  catch(e){JOBS=seedJobs();}
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(JOBS));}
+function resetData(){if(confirm('Reset to demo data? This clears any jobs you added.')){JOBS=seedJobs();save();renderAll();}}
+
+/* ---------- Views ---------- */
+function setView(v){
+  document.getElementById('view-board').classList.toggle('hidden',v!=='board');
+  document.getElementById('view-inventory').classList.toggle('hidden',v!=='inventory');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===v));
+  if(v==='inventory')renderInventory();
+}
+
+const STATUS_ORDER={booked:0,out:1,returned:2};
+function nextStatus(s){return s==='booked'?'out':s==='out'?'returned':'returned';}
+function fmt(d){const x=new Date(d+'T00:00:00');return x.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+
+function advance(id){const j=JOBS.find(x=>x.id===id);if(!j)return;j.status=nextStatus(j.status);save();renderAll();}
+function revert(id){const j=JOBS.find(x=>x.id===id);if(!j)return;j.status=j.status==='returned'?'out':j.status==='out'?'booked':'booked';save();renderAll();}
+function delJob(id){if(confirm('Delete this job?')){JOBS=JOBS.filter(x=>x.id!==id);save();renderAll();}}
+
+function jobCard(j){
+  const todayIso=iso(TODAY);
+  const overdueReturn = j.status==='out' && j.pickup < todayIso;
+  const itemsHtml=Object.entries(j.items).map(([id,q])=>
+    `<div class="it"><span>${byId[id]?byId[id].name:id}</span><span class="q">×${q}</span></div>`).join('');
+  const adv = j.status!=='returned'
+    ? `<button class="btn btn-dark btn-sm" onclick="advance('${j.id}')">${j.status==='booked'?'Mark out →':'Mark returned →'}</button>` : '';
+  const rev = j.status!=='booked'
+    ? `<button class="btn btn-ghost btn-sm" onclick="revert('${j.id}')">↩ Undo</button>` : '';
+  return `<div class="job ${overdueReturn?'overdue':''}">
+    <div class="top">
+      <div><div class="cust">${j.customer}</div><div class="type">${j.type}</div></div>
+      <span class="pill ${j.status}">${j.status}</span>
+    </div>
+    <div class="meta">
+      <b>${fmt(j.deliver)}</b> → <b>${fmt(j.pickup)}</b>${overdueReturn?' <span class="pill warn">pickup overdue</span>':''}<br>
+      📍 ${j.address}<br>👷 ${j.crew}
+    </div>
+    <div class="items-list">${itemsHtml}</div>
+    <div class="actions">${adv}${rev}
+      <button class="btn btn-ghost btn-sm" onclick="delJob('${j.id}')">Delete</button>
+    </div>
+  </div>`;
+}
+
+function renderBoard(){
+  const cols={booked:[],out:[],returned:[]};
+  JOBS.slice().sort((a,b)=>a.deliver.localeCompare(b.deliver)).forEach(j=>cols[j.status].push(j));
+  for(const s of ['booked','out','returned']){
+    const el=document.getElementById('col-'+s);
+    el.innerHTML=cols[s].length?cols[s].map(jobCard).join(''):'<div class="empty">No jobs</div>';
+  }
+  // stats
+  const todayIso=iso(TODAY);
+  const weekEnd=addDays(TODAY,7);
+  const upcoming=JOBS.filter(j=>j.deliver>=todayIso && j.deliver<=weekEnd && j.status!=='returned').length;
+  const out=JOBS.filter(j=>j.status==='out').length;
+  const overdue=JOBS.filter(j=>j.status==='out' && j.pickup<todayIso).length;
+  let itemsOut=0;JOBS.filter(j=>j.status==='out').forEach(j=>Object.values(j.items).forEach(q=>itemsOut+=q));
+  document.getElementById('boardStats').innerHTML=`
+    <div class="stat"><div class="n">${upcoming}</div><div class="l">Deliveries next 7 days</div></div>
+    <div class="stat"><div class="n">${out}</div><div class="l">Jobs currently out</div></div>
+    <div class="stat"><div class="n">${itemsOut}<span class="u"> units</span></div><div class="l">Equipment on site</div></div>
+    <div class="stat"><div class="n">${overdue}</div><div class="l">Pickups overdue</div></div>`;
+}
+
+/* reserved qty for an item on date D = sum over non-returned jobs whose window covers D */
+function reservedOn(itemId,d){
+  let r=0;
+  JOBS.forEach(j=>{
+    if(j.status==='returned')return;
+    if(d>=j.deliver && d<=j.pickup && j.items[itemId])r+=j.items[itemId];
+  });
+  return r;
+}
+
+function renderInventory(){
+  const dateEl=document.getElementById('availDate');
+  if(!dateEl.value)dateEl.value=iso(TODAY);
+  const d=dateEl.value;
+  document.getElementById('availNote').textContent=
+    `Showing on-hand vs. committed equipment for ${new Date(d+'T00:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}. Reserved = items on booked or out jobs whose rental window covers this date.`;
+  let rows='',lastCat='';
+  CATALOG.forEach(i=>{
+    if(i.label!==lastCat){rows+=`<tr class="cat-head"><td colspan="4">${i.label}</td></tr>`;lastCat=i.label;}
+    const res=reservedOn(i.id,d);
+    const avail=i.stock-res;
+    const cls=avail<=0?'none':(avail<=Math.max(1,Math.ceil(i.stock*0.15))?'low':'ok');
+    rows+=`<tr>
+      <td><div class="itemname">${i.name}</div><div class="itemtag">${i.tag}</div></td>
+      <td class="num">${i.stock}</td>
+      <td class="num">${res||'—'}</td>
+      <td class="num"><span class="avail ${cls}">${avail<0?avail:avail}</span></td>
+    </tr>`;
+  });
+  document.getElementById('invBody').innerHTML=rows;
+}
+
+/* ---------- Job modal ---------- */
+function buildItemPicker(){
+  let html='',lastCat='';
+  CATALOG.forEach(i=>{
+    if(i.label!==lastCat){html+=`<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--txt-dark-mute);margin:8px 0 2px">${i.label}</div>`;lastCat=i.label;}
+    html+=`<div class="row"><span>${i.name}</span><input type="number" min="0" value="0" data-id="${i.id}" /></div>`;
+  });
+  document.getElementById('jmItems').innerHTML=html;
+}
+function openJobModal(){
+  buildItemPicker();
+  document.getElementById('jmCustomer').value='';
+  document.getElementById('jmAddress').value='';
+  document.getElementById('jmCrew').value='';
+  document.getElementById('jmDeliver').value=iso(TODAY);
+  document.getElementById('jmPickup').value=addDays(TODAY,1);
+  document.getElementById('jobModal').classList.add('open');
+}
+function closeJobModal(){document.getElementById('jobModal').classList.remove('open');}
+function saveJob(){
+  const cust=document.getElementById('jmCustomer').value.trim();
+  if(!cust){alert('Add a customer name.');return;}
+  const items={};
+  document.querySelectorAll('#jmItems input').forEach(inp=>{
+    const q=parseInt(inp.value,10);if(q>0)items[inp.dataset.id]=q;
+  });
+  JOBS.push({
+    id:'j'+Date.now(), customer:cust,
+    type:document.getElementById('jmType').value,
+    deliver:document.getElementById('jmDeliver').value,
+    pickup:document.getElementById('jmPickup').value,
+    address:document.getElementById('jmAddress').value.trim()||'—',
+    crew:document.getElementById('jmCrew').value.trim()||'Unassigned',
+    status:'booked', items
+  });
+  save();closeJobModal();renderAll();
+}
+
+function renderAll(){renderBoard();if(!document.getElementById('view-inventory').classList.contains('hidden'))renderInventory();}
+
+load();renderBoard();
+document.getElementById('availDate').value=iso(TODAY);
+</script>
+</body>
+</html>
