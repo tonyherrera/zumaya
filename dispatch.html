@@ -252,7 +252,7 @@
     </div>
     <div class="stats" id="mapStats"></div>
     <div id="mapCanvas"></div>
-    <p class="empty" style="margin-top:10px">Sample positions for demo — within ~25 miles of the Whittier yard. In production these would update from vehicle GPS / trailer trackers.</p>
+    <p class="empty" style="margin-top:10px">Pins are generated from the dispatch board: each active job places its restroom trailer and crew vehicle at the job address (out = on site, booked = staged at the yard). Job addresses are mapped to city locations (approximate); idle units sit at the yard. Change a job's status on the board and reopen this tab to see it move. In production, addresses would be geocoded precisely and live units fed from GPS / trailer trackers.</p>
     <div style="height:40px"></div>
   </section>
 
@@ -575,27 +575,70 @@ function saveJob(){
 
 function renderAll(){renderBoard();if(!document.getElementById('view-inventory').classList.contains('hidden'))renderInventory();}
 
-/* ---------- Fleet map (sample positions, ~25 mi of Whittier yard) ---------- */
+/* ---------- Fleet map — markers derived from live dispatch jobs ---------- */
 const YARD={name:'Zumaya Yard',addr:'12435 Mar Vista St, Whittier, CA 90602',lat:33.9762,lng:-118.0353};
-const FLEET=[
-  // Restroom trailers
-  {kind:'restroom', name:'ZR15 · 4-Unit Trailer', status:'In service — Vega Wedding', loc:'Montebello', where:'out', lat:34.0095, lng:-118.1098},
-  {kind:'restroom', name:'ZR5 · 3-Unit Trailer', status:'In service — City Concert', loc:'Whittier (Central Park)', where:'out', lat:33.9806, lng:-118.0289},
-  {kind:'restroom', name:'ZR2 · 3-Unit Trailer', status:'In service — A24 Film Shoot', loc:'Arts District, Downtown LA', where:'out', lat:34.0407, lng:-118.2350},
-  {kind:'restroom', name:'ZR8 · 2-Unit Trailer', status:'In service — Corporate BBQ', loc:'City of Industry', where:'out', lat:34.0197, lng:-117.9578},
-  {kind:'restroom', name:'ZR16 · 2-Unit Trailer', status:'Servicing / pump-out', loc:'Santa Fe Springs', where:'out', lat:33.9472, lng:-118.0853},
-  {kind:'restroom', name:'ZR1 · 2-Unit Trailer', status:'Available at yard', loc:'Whittier yard', where:'yard', lat:33.9772, lng:-118.0341},
-  {kind:'restroom', name:'ZR10 · 4-Unit Trailer', status:'Available at yard', loc:'Whittier yard', where:'yard', lat:33.9753, lng:-118.0366},
-  // Vehicles
-  {kind:'vehicle', name:'Blue Truck (F-250)', status:'En route to delivery', loc:'Nr. Montebello', where:'out', lat:34.0010, lng:-118.1000},
-  {kind:'vehicle', name:'Dually (F-350)', status:'On site — film shoot', loc:'Downtown LA', where:'out', lat:34.0398, lng:-118.2335},
-  {kind:'vehicle', name:'Box Truck (2019)', status:'En route — equipment run', loc:'Norwalk', where:'out', lat:33.9022, lng:-118.0817},
-  {kind:'vehicle', name:'New Steak (F-550)', status:'On site — Corporate BBQ', loc:'City of Industry', where:'out', lat:34.0205, lng:-117.9560},
-  {kind:'vehicle', name:'Bronco', status:'En route — site survey', loc:'La Mirada', where:'out', lat:33.9172, lng:-118.0120},
-  {kind:'vehicle', name:'White Tremor (F-350)', status:'On site — delivery', loc:'Long Beach', where:'out', lat:33.7790, lng:-118.1610},
-  {kind:'vehicle', name:'Ram Cube Truck', status:'Parked at yard', loc:'Whittier yard', where:'yard', lat:33.9768, lng:-118.0349},
-  {kind:'vehicle', name:'Ford F650', status:'Parked at yard', loc:'Whittier yard', where:'yard', lat:33.9758, lng:-118.0358},
+// Address → coordinates lookup (city centroids within ~25 mi of the yard)
+const GEO=[
+  {k:['downtown la','arts district','los angeles','dtla'],lat:34.0407,lng:-118.2350,label:'Downtown LA'},
+  {k:['montebello'],lat:34.0095,lng:-118.1098,label:'Montebello'},
+  {k:['pico rivera'],lat:33.9831,lng:-118.0967,label:'Pico Rivera'},
+  {k:['la mirada'],lat:33.9172,lng:-118.0120,label:'La Mirada'},
+  {k:['industry'],lat:34.0197,lng:-117.9578,label:'City of Industry'},
+  {k:['norwalk'],lat:33.9022,lng:-118.0817,label:'Norwalk'},
+  {k:['cerritos'],lat:33.8583,lng:-118.0648,label:'Cerritos'},
+  {k:['long beach'],lat:33.7790,lng:-118.1610,label:'Long Beach'},
+  {k:['anaheim'],lat:33.8366,lng:-117.9143,label:'Anaheim'},
+  {k:['fullerton'],lat:33.8704,lng:-117.9242,label:'Fullerton'},
+  {k:['santa fe springs'],lat:33.9472,lng:-118.0853,label:'Santa Fe Springs'},
+  {k:['downey'],lat:33.9401,lng:-118.1332,label:'Downey'},
+  {k:['whittier'],lat:33.9762,lng:-118.0353,label:'Whittier'},
 ];
+const TRUCKS=['Blue Truck (F-250)','Dually (F-350)','New Steak (F-550)','Box Truck (2019)','Ram Cube Truck','Bronco','White Tremor (F-350)','Ford F650'];
+const RT_LABEL={rt4:'4-Unit',rt3:'3-Unit',rt2:'2-Unit'};
+// Idle units parked/available at the yard (not tied to an active job)
+const YARD_IDLE=[
+  {kind:'restroom',name:'ZR1 · 2-Unit Trailer',status:'Available',loc:'Whittier yard'},
+  {kind:'restroom',name:'ZR10 · 4-Unit Trailer',status:'Available',loc:'Whittier yard'},
+  {kind:'vehicle',name:'Ford F650',status:'Parked at yard',loc:'Whittier yard'},
+];
+function hash(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%100000;return h;}
+function jitter(seed){const h=hash(seed);return {dy:((h%19)/19-0.5)*0.018, dx:((Math.floor(h/19)%19)/19-0.5)*0.018};}
+function geocode(addr){
+  const a=(addr||'').toLowerCase();
+  for(const g of GEO){ if(g.k.some(w=>a.includes(w))) return {lat:g.lat,lng:g.lng,label:g.label,approx:false}; }
+  return {lat:YARD.lat,lng:YARD.lng,label:addr||'Unknown',approx:true};
+}
+function truckFor(id){return TRUCKS[hash(id)%TRUCKS.length];}
+
+// Build the marker set from the current JOBS list
+function buildFleet(){
+  const out=[];
+  JOBS.forEach(job=>{
+    if(job.status==='returned') return;            // job closed — units back at yard
+    const onSite=job.status==='out';
+    const g=geocode(job.address);
+    const base=onSite?g:YARD;                        // booked → staged at the yard
+    const where=onSite?'out':'yard';
+    const locTxt=onSite?(g.approx?job.address:g.label):'Whittier yard (staged)';
+    // restroom trailers on this job
+    const rts=Object.keys(RT_LABEL).filter(id=>job.items[id]);
+    if(rts.length){
+      const lbl=rts.map(id=>`${RT_LABEL[id]} ×${job.items[id]}`).join(', ');
+      const j=jitter(job.id+'r');
+      out.push({kind:'restroom',name:`Restroom Trailer — ${lbl}`,
+        status:onSite?`On site — ${job.customer}`:`Scheduled ${fmt(job.deliver)} — ${job.customer}`,
+        loc:locTxt,where,lat:base.lat+j.dy,lng:base.lng+j.dx});
+    }
+    // crew vehicle assigned to this job
+    const j2=jitter(job.id+'v');
+    out.push({kind:'vehicle',name:`${truckFor(job.id)} · ${job.crew}`,
+      status:onSite?`On site — ${job.customer}`:`Staged for ${job.customer} (${fmt(job.deliver)})`,
+      loc:locTxt,where,lat:base.lat+j2.dy,lng:base.lng+j2.dx});
+  });
+  // idle spares at the yard
+  YARD_IDLE.forEach((m,i)=>{const j=jitter('idle'+i);out.push({...m,where:'yard',lat:YARD.lat+j.dy,lng:YARD.lng+j.dx});});
+  return out;
+}
 
 let zmap=null, vehLayer=null, restLayer=null;
 function pin(cls,glyph){return L.divIcon({className:'',html:`<div class="zm-pin ${cls}">${glyph}</div>`,iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-14]});}
@@ -606,34 +649,38 @@ function popupHtml(m){
     <div class="pop-meta">📍 ${m.loc}</div>
     <span class="pop-status ${st}">${m.status}</span>`;
 }
-function initMap(){
-  if(zmap){zmap.invalidateSize();return;}
-  zmap=L.map('mapCanvas',{scrollWheelZoom:true}).setView([YARD.lat,YARD.lng],11);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    {subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(zmap);
-  // 25-mile service radius
-  L.circle([YARD.lat,YARD.lng],{radius:40234,color:'#1E6E6A',weight:1,fillColor:'#1E6E6A',fillOpacity:0.04,dashArray:'5,6'}).addTo(zmap);
-  // HQ
-  L.marker([YARD.lat,YARD.lng],{icon:pin('hq','Z'),zIndexOffset:1000}).addTo(zmap)
-    .bindPopup(`<div class="pop-t">${YARD.name}</div><div class="pop-meta">${YARD.addr}</div>`);
-  vehLayer=L.layerGroup().addTo(zmap);
-  restLayer=L.layerGroup().addTo(zmap);
+function refreshMap(){
+  if(!zmap) return;
+  vehLayer.clearLayers(); restLayer.clearLayers();
+  const fleet=buildFleet();
   const pts=[[YARD.lat,YARD.lng]];
-  FLEET.forEach(m=>{
+  fleet.forEach(m=>{
     const ic=m.kind==='vehicle'?pin('veh','🚚'):pin('rest','🚻');
     const mk=L.marker([m.lat,m.lng],{icon:ic}).bindPopup(popupHtml(m));
     (m.kind==='vehicle'?vehLayer:restLayer).addLayer(mk);
     pts.push([m.lat,m.lng]);
   });
-  zmap.fitBounds(pts,{padding:[40,40]});
-  // stats
-  const veh=FLEET.filter(m=>m.kind==='vehicle'), rest=FLEET.filter(m=>m.kind==='restroom');
-  const deployed=FLEET.filter(m=>m.where==='out').length, atYard=FLEET.filter(m=>m.where==='yard').length;
+  zmap.fitBounds(pts,{padding:[40,40],maxZoom:12});
+  const veh=fleet.filter(m=>m.kind==='vehicle').length, rest=fleet.filter(m=>m.kind==='restroom').length;
+  const deployed=fleet.filter(m=>m.where==='out').length, atYard=fleet.filter(m=>m.where==='yard').length;
   document.getElementById('mapStats').innerHTML=`
-    <div class="stat"><div class="n">${veh.length}</div><div class="l">Vehicles tracked</div></div>
-    <div class="stat"><div class="n">${rest.length}</div><div class="l">Restroom trailers</div></div>
+    <div class="stat"><div class="n">${veh}</div><div class="l">Vehicles tracked</div></div>
+    <div class="stat"><div class="n">${rest}</div><div class="l">Restroom trailers</div></div>
     <div class="stat"><div class="n">${deployed}</div><div class="l">Deployed / on site</div></div>
     <div class="stat"><div class="n">${atYard}</div><div class="l">At the yard</div></div>`;
+}
+function initMap(){
+  if(!zmap){
+    zmap=L.map('mapCanvas',{scrollWheelZoom:true}).setView([YARD.lat,YARD.lng],11);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+      {subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(zmap);
+    L.circle([YARD.lat,YARD.lng],{radius:40234,color:'#1E6E6A',weight:1,fillColor:'#1E6E6A',fillOpacity:0.04,dashArray:'5,6'}).addTo(zmap);
+    L.marker([YARD.lat,YARD.lng],{icon:pin('hq','Z'),zIndexOffset:1000}).addTo(zmap)
+      .bindPopup(`<div class="pop-t">${YARD.name}</div><div class="pop-meta">${YARD.addr}</div>`);
+    vehLayer=L.layerGroup().addTo(zmap);
+    restLayer=L.layerGroup().addTo(zmap);
+  }
+  refreshMap();
   setTimeout(()=>zmap.invalidateSize(),60);
 }
 function filterMap(kind){
