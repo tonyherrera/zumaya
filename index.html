@@ -157,6 +157,12 @@
   .item:hover{border-color:var(--amber)}
   .item .thumb{background:#fff;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden}
   .item .thumb img{width:100%;height:100%;object-fit:contain;mix-blend-mode:normal}
+  .item .thumb.noimg{background:linear-gradient(135deg,#1C2540,#28324f);position:relative}
+  .item .thumb.noimg::before{content:'Z';position:absolute;top:50%;left:50%;transform:translate(-50%,-130%);
+    width:34px;height:34px;border-radius:9px;background:var(--amber);color:#21160a;font-weight:800;
+    display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+  .item .thumb.noimg::after{content:'Photo coming soon';position:absolute;top:50%;left:50%;transform:translate(-50%,40%);
+    color:var(--txt-mute);font-size:.72rem;letter-spacing:.03em;white-space:nowrap}
   .item .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
   .item .tag{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--amber)}
   .item.teal .tag{color:#4fc3bd}
@@ -393,6 +399,7 @@
           <button class="chip" data-cat="production">Production &amp; Makeup</button>
           <button class="chip" data-cat="essentials">Essentials &amp; Safety</button>
           <button class="chip" data-cat="waste">Waste &amp; Dumpsters</button>
+          <button class="chip" data-cat="services">Services &amp; Delivery</button>
         </div>
         <div class="items" id="items"><!-- JS injects items --></div>
       </div>
@@ -586,6 +593,53 @@
     // Waste
     {id:'dumpster', cat:'waste', tag:'Waste', name:'Dumpster 3 yd (Blue/Black/Green)', img:'dumpster-3yd', from:'$195', unit:'/day'},
     {id:'trashcan', cat:'waste', tag:'Waste', name:'Trash Can 33 gal', img:'trash-can', tiers:['$5','$10','$15']},
+
+    // ----- Added from QuickBooks product list, June 2026 (photos pending) -----
+    // Restrooms
+    {id:'showertrailer', cat:'restroom', tag:'Shower Trailer', name:'Shower Trailer', img:'shower-trailer', from:'$1,950', unit:'/event'},
+    {id:'portarestroom', cat:'restroom', tag:'Restroom', name:'Portable Restroom (single)', img:'portable-restroom', from:'Call', unit:''},
+    {id:'handwash', cat:'restroom', tag:'Restroom', name:'Handwashing Station', img:'handwashing-station', tiers:['$75','$150','$225']},
+    // Production & Makeup
+    {id:'makeuptrailer', cat:'production', tag:'Production', name:'Makeup Trailer', img:'makeup-trailer', from:'$1,100', unit:'/event'},
+    {id:'changingtrailer', cat:'production', tag:'Production', name:'Changing Trailer', img:'changing-trailer', from:'Call', unit:''},
+    // Power & Lighting
+    {id:'gen5000', cat:'power', tag:'Generators', name:'Generator 5000 W', img:'generator-5000w', tiers:['$145','$290','$435']},
+    {id:'battcharger', cat:'power', tag:'Power', name:'Battery Charger', img:'battery-charger', tiers:['$7','$14','$21']},
+    {id:'extrabatt', cat:'power', tag:'Power', name:'Extra Batteries', img:'extra-batteries', tiers:['$6','$12','$18']},
+    // Heating & Cooling
+    {id:'airscrubber', cat:'climate', tag:'Air Quality', name:'Air Scrubber', img:'air-scrubber', tiers:['$150','$300','$450']},
+    {id:'pedestalfan', cat:'climate', tag:'Cooling', name:'Industrial Pedestal Fan', img:'pedestal-fan', tiers:['$15','$30','$45']},
+    // Tents & Accessories
+    {id:'tent4060', cat:'tents', tag:'Tents', name:'Tent 40×60 (large event)', img:'tent-40x60', from:'Call', unit:''},
+    {id:'canopy2040', cat:'tents', tag:'Tents', name:'Canopy 20×40', img:'canopy-20x40', from:'Call', unit:''},
+    {id:'raingutter10', cat:'tents', tag:'Tent Accessory', name:'Rain Gutters 10"', img:'rain-gutters-10', tiers:['$2','$4','$6']},
+    {id:'raingutter20', cat:'tents', tag:'Tent Accessory', name:'Rain Gutters 20"', img:'rain-gutters-20', tiers:['$3','$6','$9']},
+    // Tables & Events
+    {id:'cocktailtbl', cat:'tables', tag:'Tables', name:'Stand-Up Cocktail Table', img:'cocktail-table', from:'$9', unit:'/day'},
+    {id:'benches', cat:'tables', tag:'Seating', name:'Benches', img:'benches', from:'$10', unit:'/day'},
+    {id:'pipedrape', cat:'tables', tag:'Décor', name:'Pipe &amp; Drape (per section)', img:'pipe-drape', from:'$35', unit:''},
+    {id:'linens', cat:'tables', tag:'Décor', name:'Table Linens', img:'table-linens', from:'Call', unit:''},
+    // Essentials & Safety
+    {id:'signs', cat:'essentials', tag:'Safety', name:'Set of Signs', img:'set-of-signs', from:'$5', unit:'/day'},
+    // Waste & Dumpsters
+    {id:'smalltrash', cat:'waste', tag:'Waste', name:'Small Trash Can', img:'small-trash-can', tiers:['$5','$10','$15']},
+    {id:'recycleprog', cat:'waste', tag:'Waste', name:'Dumpster Recycling Program', img:'dumpster-recycling', from:'$255', unit:''},
+
+    // ----- Services & Delivery (from QuickBooks list) -----
+    {id:'svc_delivery', cat:'services', tag:'Delivery', name:'Order Delivery & Setup', img:'svc-delivery', from:'$375', unit:''},
+    {id:'svc_delivery_ah', cat:'services', tag:'Delivery', name:'Delivery & Setup — After Hours / Weekend', img:'svc-delivery', from:'$475', unit:''},
+    {id:'svc_restroom_svc', cat:'services', tag:'Service', name:'Restroom Trailer Service', img:'svc-restroom', from:'$225', unit:''},
+    {id:'svc_restroom_delivery', cat:'services', tag:'Delivery', name:'Restroom Delivery & Pickup', img:'svc-restroom', from:'$125', unit:''},
+    {id:'svc_relocation', cat:'services', tag:'Service', name:'Move / Relocation', img:'svc-relocation', from:'$225', unit:''},
+    {id:'svc_refuel', cat:'services', tag:'Service', name:'Generator Refueling', img:'svc-refuel', from:'$50', unit:''},
+    {id:'svc_attendant', cat:'services', tag:'Labor', name:'Restroom Attendant', img:'svc-attendant', from:'$37.50', unit:'/hr'},
+    {id:'svc_cleaning', cat:'services', tag:'Labor', name:'Cleaning Service', img:'svc-cleaning', from:'Call', unit:''},
+    {id:'svc_tentpermit', cat:'services', tag:'Permit', name:'Tent Permit', img:'svc-permit', from:'$742', unit:''},
+    {id:'svc_tenttech', cat:'services', tag:'Labor', name:'Tent Tech', img:'svc-tech', from:'$45', unit:'/hr'},
+    {id:'svc_actech', cat:'services', tag:'Labor', name:'AC Tech', img:'svc-tech', from:'$40', unit:'/hr'},
+    {id:'svc_driver', cat:'services', tag:'Labor', name:'Driver', img:'svc-driver', from:'$45', unit:'/hr'},
+    {id:'svc_pipedrape_setup', cat:'services', tag:'Setup', name:'Pipe & Drape Setup', img:'svc-setup', from:'$250', unit:''},
+    {id:'svc_outofmileage', cat:'services', tag:'Delivery', name:'Out-of-Mileage Zone Fee', img:'svc-mileage', from:'$125', unit:''},
   ];
 
   const TEAL_CATS = ['production'];
@@ -611,7 +665,7 @@
     const list = CATALOG.filter(i => activeCat==='all' || i.cat===activeCat);
     itemsEl.innerHTML = list.map(i => `
       <div class="item ${TEAL_CATS.includes(i.cat)?'teal':''}">
-        <div class="thumb"><img src="images/${i.img}.jpg" alt="${i.name}" loading="lazy"></div>
+        <div class="thumb"><img src="images/${i.img}.jpg" alt="${i.name}" loading="lazy" onerror="this.closest('.thumb').classList.add('noimg');this.remove()"></div>
         <div class="body">
           <div class="tag">${i.tag}</div>
           <h4>${i.name}</h4>
